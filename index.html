@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <!-- 基本設定 -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 【重要】SEO対策：検索結果に表示されるタイトル -->
+    <title>ふんじゃんのＢ級でいこうぜ！ | 全国の激アツ道の駅を動画で紹介</title>
+
+    <!-- 【重要】SEO対策：検索結果の説明文（ディスクリプション） -->
+    <meta
+      name="description"
+      content="全国の面白い道の駅、激アツな道の駅をYouTube動画で紹介！「ふんじゃんのＢ級でいこうぜ！」では、日本地図やランク別リストから気になる道の駅を簡単に探せます。ドライブや旅行の参考に。"
+    />
+
+    <!-- キーワード（参考程度） -->
+    <meta
+      name="keywords"
+      content="道の駅, 動画, YouTube, ドライブ, 旅行, B級スポット, 車中泊, グルメ"
+    />
+
+    <!-- 【重要】正規URLの設定（重複コンテンツ防止） -->
+    <link rel="canonical" href="https://funjanb.github.io/funjanb/" />
+
+    <!-- SNSシェア用設定 (OGP) -->
+    <meta
+      property="og:title"
+      content="ふんじゃんのＢ級でいこうぜ！ | 全国の激アツ道の駅を動画で紹介"
+    />
+    <meta
+      property="og:description"
+      content="全国の面白い道の駅を動画でチェック！マップやランクから探せる道の駅紹介サイト。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://funjanb.github.io/funjanb/" />
+    <!-- サイトのサムネイル画像があれば、以下のcontentに画像URLを設定してください（例: https://.../ogp.jpg） -->
+    <meta
+      property="og:image"
+      content="https://funjanb.github.io/funjanb/assets/ogp-image.jpg"
+    />
+    <meta property="og:site_name" content="ふんじゃんのＢ級でいこうぜ！" />
+    <meta property="og:locale" content="ja_JP" />
+
+    <!-- Twitter用設定 -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ふんじゃんのＢ級でいこうぜ！" />
+    <meta
+      name="twitter:description"
+      content="全国の激アツ道の駅を動画で紹介！"
+    />
+
+    <!-- ファビコン（ブラウザのタブ用アイコン）設定 -->
+    <!-- お持ちのアイコン画像があれば設定してください -->
+    <!-- <link rel="icon" href="/favicon.ico" /> -->
+
+    <!-- デザイン・機能の読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Zen+Maru+Gothic:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- 構造化データ（Googleにサイト情報を正しく伝えるためのJSON-LD） -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ふんじゃんのＢ級でいこうぜ！",
+        "url": "https://funjanb.github.io/funjanb/",
+        "description": "全国の激アツ道の駅を動画で紹介するサイト",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://funjanb.github.io/funjanb/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <style>
+      /* カスタムフォントと基本設定 */
+      body {
+        font-family: "Zen Maru Gothic", sans-serif;
+        background-color: #fffbeb; /* 薄い黄色 */
+        background-image: radial-gradient(#fcd34d 20%, transparent 20%),
+          radial-gradient(#fcd34d 20%, transparent 20%);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+        color: #4b5563;
+        /* スクロールバーのスタイル */
+        scrollbar-width: thin;
+        scrollbar-color: #f59e0b #fffbeb;
+      }
+
+      h1 {
+        font-family: "Yusei Magic", sans-serif;
+        text-shadow: 3px 3px 0px #f59e0b;
+      }
+
+      /* マップの親コンテナ（固定枠） */
+      .map-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        /* 高さをautoにし、アスペクト比で管理 */
+        height: auto;
+        aspect-ratio: 1000 / 1000;
+        margin: 0 auto;
+        background-color: rgba(255, 255, 255, 0.6);
+        border: 4px dashed #fcd34d;
+        border-radius: 20px;
+        overflow: hidden; /* 枠外は隠す */
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+      }
+
+      /* スクロール可能な領域 */
+      .map-scroll-area {
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* コンテンツが大きい場合スクロール */
+        -webkit-overflow-scrolling: touch;
+
+        /* 修正: 強制的な中央寄せ(justify-content/align-items)を削除 */
+        /* これにより、拡大してコンテンツが親を超えた場合に、左上端が見切れる問題を解消 */
+        display: flex;
+      }
+
+      /* コンテンツが親より大きくなった場合のスクロール余白挙動補正 */
+      .map-scroll-area::after {
+        content: "";
+        display: block;
+        flex: 0 0 auto;
+      }
+
+      /* 実際に拡大縮小されるコンテンツ */
+      .map-content {
+        position: relative;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1000 / 800;
+        transition: width 0.3s ease;
+        transform-origin: center center;
+
+        /* margin: auto により、親より小さい時は中央配置、大きい時は通常配置（スクロール可）になる */
+        margin: auto;
+        flex-shrink: 0; /* 親が小さくても縮まないようにする */
+      }
+
+      /* 日本地図のSVGスタイリング */
+      .japan-map {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        filter: drop-shadow(5px 5px 0px rgba(0, 0, 0, 0.1));
+      }
+
+      /* 共通のパススタイル */
+      .island {
+        fill: #ffffff;
+        stroke-width: 10;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: all 0.3s ease;
+        cursor: grab;
+      }
+      .island:hover {
+        fill: #fffaea;
+      }
+
+      /* 各エリアの色分け */
+      .island-hokkaido {
+        stroke: #f97316;
+      }
+      .island-honshu {
+        stroke: #2dd4bf;
+      }
+      .island-shikoku {
+        stroke: #3b82f6;
+      }
+      .island-kyushu {
+        stroke: #d946ef;
+      }
+      .island-okinawa {
+        stroke: #facc15;
+      }
+
+      /* ピンのラッパー */
+      .pin-wrapper {
+        position: absolute;
+        transform: translate(-50%, -100%);
+        cursor: pointer;
+        z-index: 10;
+        width: 0;
+        height: 0;
+      }
+      .pin-wrapper:hover {
+        z-index: 100;
+      }
+
+      /* ピンアイコン */
+      .pin {
+        font-size: 2.5rem;
+        color: #ef4444;
+        filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2));
+        position: absolute;
+        left: -12px;
+        bottom: 0;
+        transition: color 0.2s;
+      }
+      .pin:hover {
+        color: #dc2626;
+      }
+
+      .pin-label {
+        background: white;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        white-space: nowrap;
+        border: 3px solid #ef4444;
+        box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+        z-index: 25;
+        color: #333;
+      }
+      .pin-wrapper:hover .pin-label {
+        opacity: 1;
+      }
+
+      /* ズームコントロール */
+      .zoom-controls {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 50;
+      }
+      .zoom-btn {
+        width: 50px;
+        height: 50px;
+        background-color: white;
+        border: 3px solid #f59e0b;
+        border-radius: 50%;
+        color: #f59e0b;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+        transition: all 0.1s;
+      }
+      .zoom-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+      }
+      .zoom-level {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        text-align: center;
+        font-weight: bold;
+        color: #555;
+      }
+
+      /* カードのスタイル */
+      .station-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .station-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 5px 5px 0px #f59e0b;
+      }
+
+      /* ランクバッジ */
+      .rank-badge {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Yusei Magic", sans-serif;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        border-radius: 50%;
+        box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+        transform: rotate(-15deg);
+        z-index: 10;
+      }
+      .rank-s {
+        background: linear-gradient(135deg, #ffd700, #fbbf24);
+        border: 3px solid #fff;
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+      }
+      .rank-a {
+        background: linear-gradient(135deg, #f472b6, #ec4899);
+        border: 3px solid #fff;
+      }
+      .rank-b {
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        border: 3px solid #fff;
+      }
+      .rank-e {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: 3px solid #fff;
+      }
+      .rank-other {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+        border: 3px solid #fff;
+      }
+
+      /* フィルターUI */
+      select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen pb-10">
+    <!-- ヘッダーエリア -->
+    <header
+      class="bg-yellow-400 border-b-4 border-yellow-600 py-3 md:py-6 text-center sticky top-0 z-50 shadow-lg"
+    >
+      <div class="container mx-auto px-4">
+        <h1
+          class="text-lg md:text-5xl text-white tracking-wider transform -rotate-1 inline-block whitespace-nowrap"
+        >
+          <i class="fas fa-car-side mr-2"></i>ふんじゃんのＢ級でいこうぜ！
+        </h1>
+        <p
+          class="text-yellow-800 mt-1 md:mt-2 font-bold text-[10px] md:text-base bg-yellow-200 inline-block px-4 py-1 rounded-full whitespace-nowrap"
+        >
+          全国の激アツ道の駅をタップして動画をチェック！
+        </p>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 mt-8">
+      <!-- 地図セクション -->
+      <section class="mb-16">
+        <h2
+          class="text-2xl font-bold text-center mb-6 text-emerald-600 bg-white inline-block px-6 py-2 rounded-full border-2 border-emerald-500 mx-auto block shadow-md"
+        >
+          <i class="fas fa-map-marked-alt mr-2"></i>日本地図から探す
+        </h2>
+
+        <div class="map-wrapper">
+          <!-- ズームコントロール -->
+          <div class="zoom-controls">
+            <div class="zoom-level" id="zoom-level-text">x1.00</div>
+            <button
+              class="zoom-btn"
+              onclick="zoomIn()"
+              title="拡大"
+              aria-label="地図を拡大"
+            >
+              <i class="fas fa-plus"></i>
+            </button>
+            <button
+              class="zoom-btn"
+              onclick="zoomOut()"
+              title="縮小"
+              aria-label="地図を縮小"
+            >
+              <i class="fas fa-minus"></i>
+            </button>
+            <button
+              class="zoom-btn"
+              onclick="zoomReset()"
+              title="リセット"
+              aria-label="地図のズームをリセット"
+              style="font-size: 1rem; color: #666; border-color: #999"
+            >
+              <i class="fas fa-compress"></i>
+            </button>
+          </div>
+
+          <!-- スクロール領域 -->
+          <div class="map-scroll-area" id="scroll-area">
+            <!-- 拡大縮小対象 -->
+            <div class="map-content" id="map-content">
+              <!-- 日本地図SVG -->
+              <svg
+                class="japan-map"
+                viewBox="0 0 1000 800"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="日本地図"
+                role="img"
+              >
+                <title>日本地図クリッカブルマップ</title>
+                <!-- 北海道 -->
+                <path
+                  class="island island-hokkaido"
+                  d="M720,50 L820,40 L930,120 L880,220 L750,200 L700,120 Z"
+                  aria-label="北海道エリア"
+                />
+
+                <!-- 本州 -->
+                <path
+                  class="island island-honshu"
+                  d="M680,250 L820,250 L790,540 L640,690 L550,660 L530,620 L300,600 L280,520 L350,480 L450,450 L580,400 L650,280 Z"
+                  aria-label="本州エリア"
+                />
+
+                <!-- 四国 -->
+                <path
+                  class="island island-shikoku"
+                  d="M300,650 L460,650 L450,750 L290,750 Z"
+                  aria-label="四国エリア"
+                />
+
+                <!-- 九州 -->
+                <path
+                  class="island island-kyushu"
+                  d="M100,550 L250,550 L240,750 L80,720 Z"
+                  aria-label="九州エリア"
+                />
+
+                <!-- 沖縄 -->
+                <path
+                  class="island island-okinawa"
+                  d="M40,760 L80,760 L80,800 L40,800 Z"
+                  aria-label="沖縄エリア"
+                />
+              </svg>
+
+              <!-- ピンコンテナ -->
+              <div id="map-pins-container"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- リストセクション -->
+      <section>
+        <h2
+          class="text-2xl font-bold text-center mb-6 text-orange-600 bg-white inline-block px-6 py-2 rounded-full border-2 border-orange-500 mx-auto block shadow-md"
+        >
+          <i class="fas fa-list-ul mr-2"></i>道の駅リストから探す
+        </h2>
+
+        <!-- 絞り込み機能 -->
+        <div
+          class="bg-white p-6 rounded-2xl border-4 border-yellow-200 shadow-lg max-w-4xl mx-auto mb-8"
+        >
+          <div
+            class="flex flex-col md:flex-row justify-center items-center gap-4"
+          >
+            <!-- ランク絞り込み -->
+            <div class="w-full md:w-auto">
+              <label
+                for="rank-filter"
+                class="block text-xs font-bold text-gray-500 mb-1 ml-2"
+                >ランクで絞り込み</label
+              >
+              <div class="relative">
+                <select
+                  id="rank-filter"
+                  onchange="applyFilters()"
+                  class="w-full md:w-48 bg-gray-50 border-2 border-gray-300 text-gray-800 text-lg font-bold rounded-full focus:ring-yellow-500 focus:border-yellow-500 block px-4 py-2 shadow-sm cursor-pointer"
+                >
+                  <option value="">全て表示</option>
+                  <option value="S">ランク S</option>
+                  <option value="A">ランク A</option>
+                  <option value="E">ランク E</option>
+                  <option value="B">ランク B</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 県名絞り込み -->
+            <div class="w-full md:w-auto">
+              <label
+                for="pref-filter"
+                class="block text-xs font-bold text-gray-500 mb-1 ml-2"
+                >県名で絞り込み</label
+              >
+              <div class="relative">
+                <select
+                  id="pref-filter"
+                  onchange="applyFilters()"
+                  class="w-full md:w-48 bg-gray-50 border-2 border-gray-300 text-gray-800 text-lg font-bold rounded-full focus:ring-yellow-500 focus:border-yellow-500 block px-4 py-2 shadow-sm cursor-pointer"
+                >
+                  <option value="">全て表示</option>
+                  <!-- JSで選択肢生成 -->
+                </select>
+              </div>
+            </div>
+
+            <!-- クリアボタン -->
+            <div class="w-full md:w-auto flex items-end">
+              <button
+                onclick="resetFilters()"
+                class="w-full md:w-auto mt-5 md:mt-0 bg-gray-400 hover:bg-gray-500 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition-colors flex items-center justify-center"
+              >
+                <i class="fas fa-undo mr-2"></i>クリア
+              </button>
+            </div>
+          </div>
+          <p
+            id="filter-count"
+            class="text-center text-sm text-gray-500 mt-3 font-bold"
+          ></p>
+        </div>
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto"
+          id="station-list"
+        >
+          <!-- リストアイテムはJSで動的に生成されます -->
+        </div>
+      </section>
+    </main>
+
+    <footer
+      class="mt-20 py-8 bg-gray-800 text-white text-center border-t-4 border-gray-600"
+    >
+      <p class="text-xl font-bold mb-2">ふんじゃんのＢ級でいこうぜ！</p>
+      <p class="text-sm text-gray-400">
+        &copy; 2024 Funjan Road Station Project.
+      </p>
+    </footer>
+
+    <script>
+      // データ定義
+      let stationsData = [
+        {
+          id: 1,
+          rank: "A",
+          name: "すさみ町(和歌山県)",
+          prefecture: "和歌山県",
+          address: "和歌山県西牟婁郡すさみ町江住８０８−１",
+          url: "https://www.youtube.com/watch?v=nhKyinmYK6k",
+          mapTop: "78%", // 紀伊半島先端付近
+          mapLeft: "55%",
+          color: "bg-orange-100 border-orange-300",
+        },
+        {
+          id: 2,
+          rank: "S",
+          name: "越前町(福井県)",
+          prefecture: "福井県",
+          address: "福井県丹生郡越前町厨７１−３３５−１",
+          url: "https://www.youtube.com/watch?v=WMajkGinSXg",
+          mapTop: "55%", // 北陸
+          mapLeft: "55%",
+          color: "bg-blue-100 border-blue-300",
+        },
+        {
+          id: 3,
+          rank: "A",
+          name: "飯高駅(三重県)",
+          prefecture: "三重県",
+          address: "三重県松阪市飯高町宮前１７７",
+          url: "https://www.youtube.com/watch?v=CmH0R1-PIjw",
+          mapTop: "75%", // 紀伊半島東部
+          mapLeft: "58%",
+          color: "bg-green-100 border-green-300",
+        },
+        {
+          id: 4,
+          rank: "S",
+          name: "マルメロの駅ながと(長野県)",
+          prefecture: "長野県",
+          address: "長野県小県郡長和町古町２６４３−３",
+          url: "https://www.youtube.com/watch?v=LrD97sLTDe4",
+          mapTop: "48%", // 中部内陸
+          mapLeft: "65%",
+          color: "bg-purple-100 border-purple-300",
+        },
+        {
+          id: 5,
+          rank: "A",
+          name: "世羅町(広島県)",
+          prefecture: "広島県",
+          address: "広島県世羅郡世羅町川尻2402-1",
+          url: "https://www.youtube.com/watch?v=QPMJFcp5f9I",
+          mapTop: "60%", // 中国地方
+          mapLeft: "35%",
+          color: "bg-red-100 border-red-300",
+        },
+        {
+          id: 6,
+          rank: "A",
+          name: "オアシスおぶせ(長野県)",
+          prefecture: "長野県",
+          address: "長野県上高井郡小布施町大島601",
+          url: "https://www.youtube.com/watch?v=FHDszx1XFWg",
+          mapTop: "42%", // 長野北部
+          mapLeft: "65%",
+          color: "bg-indigo-100 border-indigo-300",
+        },
+        {
+          id: 7,
+          rank: "E",
+          name: "フルーツ・フラワーパーク大沢(兵庫県)",
+          prefecture: "兵庫県",
+          address: "兵庫県神戸市北区大沢町上大沢2150",
+          url: "https://www.youtube.com/watch?v=abWYDoZnNLQ",
+          mapTop: "70%", // 兵庫南部
+          mapLeft: "48%",
+          color: "bg-pink-100 border-pink-300",
+        },
+        {
+          id: 8,
+          rank: "A",
+          name: "たからだの里さいた(香川県)",
+          prefecture: "香川県",
+          address: "香川県三豊市財田町財田上180-6",
+          url: "https://www.youtube.com/watch?v=vKnb0xCaC0Y",
+          mapTop: "82%", // 四国
+          mapLeft: "35%",
+          color: "bg-yellow-100 border-yellow-300",
+        },
+        {
+          id: 9,
+          rank: "A",
+          name: "三方五湖(福井県)",
+          prefecture: "福井県",
+          address: "福井県三方上中郡若狭町鳥浜122-31-1",
+          url: "https://www.youtube.com/watch?v=FNvIOAGG0ug",
+          mapTop: "53%", // 福井西部
+          mapLeft: "53%",
+          color: "bg-cyan-100 border-cyan-300",
+        },
+        {
+          id: 10,
+          rank: "A",
+          name: "ふれあいパークみの(香川県)",
+          prefecture: "香川県",
+          address: "香川県三豊市三野町大見乙74",
+          url: "https://www.youtube.com/watch?v=kCo0b7O9XQc",
+          mapTop: "82%", // 四国
+          mapLeft: "40%",
+          color: "bg-teal-100 border-teal-300",
+        },
+      ];
+
+      // --- ズーム機能の実装 ---
+      let currentZoom = 1.0;
+      const zoomStep = 0.25;
+      const maxZoom = 3.0;
+      const minZoom = 1.0;
+      const mapContent = document.getElementById("map-content");
+      const zoomLevelText = document.getElementById("zoom-level-text");
+      const scrollArea = document.getElementById("scroll-area");
+
+      function updateZoom() {
+        // 幅をパーセントで設定
+        const newWidthPercent = currentZoom * 100;
+
+        mapContent.style.width = `${newWidthPercent}%`;
+
+        // ズーム表示の更新
+        zoomLevelText.textContent = `x${currentZoom.toFixed(2)}`;
+      }
+
+      function zoomIn() {
+        if (currentZoom < maxZoom) {
+          currentZoom += zoomStep;
+          currentZoom = Math.round(currentZoom * 100) / 100;
+          updateZoom();
+        }
+      }
+
+      function zoomOut() {
+        if (currentZoom > minZoom) {
+          currentZoom -= zoomStep;
+          currentZoom = Math.round(currentZoom * 100) / 100;
+          updateZoom();
+        }
+      }
+
+      function zoomReset() {
+        currentZoom = 1.0;
+        updateZoom();
+        scrollArea.scrollTop = 0;
+        scrollArea.scrollLeft = 0;
+      }
+
+      // --- 以下、既存のロジック ---
+
+      const listContainer = document.getElementById("station-list");
+      const mapPinsContainer = document.getElementById("map-pins-container");
+      const rankFilterSelect = document.getElementById("rank-filter");
+      const prefFilterSelect = document.getElementById("pref-filter");
+      const filterCountLabel = document.getElementById("filter-count");
+
+      function initPrefectureFilter() {
+        const prefs = [
+          ...new Set(
+            stationsData.filter((s) => s.prefecture).map((s) => s.prefecture)
+          ),
+        ].sort((a, b) => a.localeCompare(b, "ja"));
+        prefs.forEach((pref) => {
+          const option = document.createElement("option");
+          option.value = pref;
+          option.textContent = pref;
+          prefFilterSelect.appendChild(option);
+        });
+      }
+
+      function getRankClass(rank) {
+        switch (rank.toUpperCase()) {
+          case "S":
+            return "rank-s";
+          case "A":
+            return "rank-a";
+          case "B":
+            return "rank-b";
+          case "E":
+            return "rank-e";
+          default:
+            return "rank-other";
+        }
+      }
+
+      function renderMapPins(data) {
+        mapPinsContainer.innerHTML = "";
+        data.forEach((station, index) => {
+          if (
+            station.name &&
+            station.url &&
+            station.mapTop &&
+            station.mapLeft
+          ) {
+            const pinLink = document.createElement("a");
+            pinLink.href = station.url;
+            pinLink.target = "_blank";
+            pinLink.className = "pin-wrapper";
+            pinLink.style.top = station.mapTop;
+            pinLink.style.left = station.mapLeft;
+
+            // 位置合わせのみ行う
+            pinLink.style.transform = `translate(-50%, -100%)`;
+
+            pinLink.innerHTML = `
+                        <div class="pin-label text-xs">No.${station.id} ${station.name}</div>
+                        <i class="fas fa-map-marker-alt pin"></i>
+                    `;
+            mapPinsContainer.appendChild(pinLink);
+          }
+        });
+      }
+
+      function renderStationList(data) {
+        listContainer.innerHTML = "";
+        if (data.length === 0) {
+          listContainer.innerHTML =
+            '<div class="col-span-full text-center text-gray-500 py-10 font-bold">条件に一致する道の駅は見つかりませんでした...</div>';
+          return;
+        }
+
+        data.forEach((station) => {
+          if (station.name && station.url) {
+            const rankClass = getRankClass(station.rank);
+            const card = document.createElement("a");
+            card.href = station.url;
+            card.target = "_blank";
+            card.className = `station-card block p-6 pt-8 rounded-xl border-4 ${
+              station.color || "bg-gray-100 border-gray-300"
+            } bg-white relative overflow-visible group`;
+
+            card.innerHTML = `
+                        <div class="rank-badge ${rankClass}">
+                            ${station.rank}
+                        </div>
+                        <div class="absolute top-0 right-0 bg-gray-200 text-gray-600 font-bold px-3 py-1 rounded-bl-lg text-xs">
+                            No.${station.id}
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-2xl">
+                                🚗
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors leading-tight">
+                                    ${station.name}
+                                </h3>
+                                <p class="text-sm text-gray-600 mb-2">
+                                    <i class="fas fa-map-marker-alt mr-1 text-red-400"></i>
+                                    ${station.address}
+                                </p>
+                                <span class="inline-flex items-center text-white bg-red-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm group-hover:bg-red-700 transition-colors">
+                                    <i class="fab fa-youtube mr-1"></i> 動画を見る
+                                </span>
+                            </div>
+                        </div>
+                    `;
+            listContainer.appendChild(card);
+          }
+        });
+      }
+
+      function applyFilters() {
+        const rankValue = rankFilterSelect.value;
+        const prefValue = prefFilterSelect.value;
+
+        const filteredData = stationsData.filter((station) => {
+          if (!station.name) return false;
+          const matchRank = rankValue === "" || station.rank === rankValue;
+          const matchPref =
+            prefValue === "" || station.prefecture === prefValue;
+          return matchRank && matchPref;
+        });
+
+        filterCountLabel.textContent = `${filteredData.length}件 表示中`;
+        renderStationList(filteredData);
+        renderMapPins(filteredData);
+      }
+
+      function resetFilters() {
+        rankFilterSelect.value = "";
+        prefFilterSelect.value = "";
+        applyFilters();
+      }
+
+      // 初期化処理
+      initPrefectureFilter();
+      applyFilters();
+    </script>
+  </body>
+</html>
