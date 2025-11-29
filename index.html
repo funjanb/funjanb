@@ -123,9 +123,6 @@
         height: 100%;
         overflow: auto; /* コンテンツが大きい場合スクロール */
         -webkit-overflow-scrolling: touch;
-
-        /* 修正: 強制的な中央寄せ(justify-content/align-items)を削除 */
-        /* これにより、拡大してコンテンツが親を超えた場合に、左上端が見切れる問題を解消 */
         display: flex;
       }
 
@@ -144,10 +141,8 @@
         aspect-ratio: 1000 / 800;
         transition: width 0.3s ease;
         transform-origin: center center;
-
-        /* margin: auto により、親より小さい時は中央配置、大きい時は通常配置（スクロール可）になる */
         margin: auto;
-        flex-shrink: 0; /* 親が小さくても縮まないようにする */
+        flex-shrink: 0;
       }
 
       /* 日本地図のSVGスタイリング */
@@ -203,29 +198,29 @@
 
       /* ピンアイコン */
       .pin {
-        font-size: 2.5rem;
-        color: #ef4444;
+        font-size: calc(2.5rem * 2 / 3);
+        /* colorはJSで制御するため削除 */
         filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2));
         position: absolute;
-        left: -12px;
+        left: calc(-12px * 2 / 3);
         bottom: 0;
         transition: color 0.2s;
       }
       .pin:hover {
-        color: #dc2626;
+        filter: brightness(1.2);
       }
 
       .pin-label {
         background: white;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 0.9rem;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
         font-weight: bold;
         white-space: nowrap;
-        border: 3px solid #ef4444;
-        box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+        border: 2px solid #666; /* デフォルト枠色 */
+        box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
         position: absolute;
-        bottom: 40px;
+        bottom: calc(40px * 2 / 3);
         left: 50%;
         transform: translateX(-50%);
         opacity: 0;
@@ -233,6 +228,8 @@
         pointer-events: none;
         z-index: 25;
         color: #333;
+        text-align: center;
+        min-width: 120px;
       }
       .pin-wrapper:hover .pin-label {
         opacity: 1;
@@ -283,7 +280,7 @@
       }
       .station-card:hover {
         transform: translateY(-5px);
-        box-shadow: 5px 5px 0px #f59e0b;
+        box-shadow: 5px 5px 0px #777;
       }
 
       /* ランクバッジ */
@@ -291,20 +288,23 @@
         position: absolute;
         top: -10px;
         left: -10px;
-        width: 50px;
-        height: 50px;
+        width: 55px;
+        height: 55px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: "Yusei Magic", sans-serif;
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         font-weight: bold;
         color: white;
         border-radius: 50%;
         box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
         transform: rotate(-15deg);
         z-index: 10;
+        letter-spacing: -0.1em;
       }
+
+      /* ランクごとの色定義 */
       .rank-s {
         background: linear-gradient(135deg, #ffd700, #fbbf24);
         border: 3px solid #fff;
@@ -318,13 +318,60 @@
         background: linear-gradient(135deg, #60a5fa, #3b82f6);
         border: 3px solid #fff;
       }
-      .rank-e {
+      /* 変更: Cを緑に */
+      .rank-c {
         background: linear-gradient(135deg, #10b981, #059669);
         border: 3px solid #fff;
       }
+      /* 変更: Eをグレーに */
+      .rank-e {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+        border: 3px solid #fff;
+      }
+      /* その他 */
       .rank-other {
         background: linear-gradient(135deg, #9ca3af, #6b7280);
         border: 3px solid #fff;
+      }
+
+      /* テキスト色クラス（ピン用） */
+      .text-rank-s {
+        color: #fbbf24;
+      }
+      .text-rank-a {
+        color: #ec4899;
+      }
+      .text-rank-b {
+        color: #3b82f6;
+      }
+      .text-rank-c {
+        color: #059669;
+      }
+      .text-rank-e {
+        color: #6b7280;
+      }
+      .text-rank-other {
+        color: #6b7280;
+      }
+
+      /* ボーダー色クラス（ピン吹き出し用） */
+      .border-rank-s {
+        border-color: #fbbf24;
+      }
+      .border-rank-a {
+        border-color: #ec4899;
+      }
+      .border-rank-b {
+        border-color: #3b82f6;
+      }
+      .border-rank-c {
+        border-color: #059669;
+      }
+      .border-rank-e {
+        border-color: #6b7280;
+      }
+      .border-rank-other {
+        border-color: #6b7280;
       }
 
       /* フィルターUI */
@@ -483,10 +530,7 @@
                   class="w-full md:w-48 bg-gray-50 border-2 border-gray-300 text-gray-800 text-lg font-bold rounded-full focus:ring-yellow-500 focus:border-yellow-500 block px-4 py-2 shadow-sm cursor-pointer"
                 >
                   <option value="">全て表示</option>
-                  <option value="S">ランク S</option>
-                  <option value="A">ランク A</option>
-                  <option value="E">ランク E</option>
-                  <option value="B">ランク B</option>
+                  <!-- JSで選択肢を動的に生成 -->
                 </select>
               </div>
             </div>
@@ -494,7 +538,7 @@
             <!-- 県名絞り込み -->
             <div class="w-full md:w-auto">
               <label
-                for="pref-filter"
+                for="rank-filter"
                 class="block text-xs font-bold text-gray-500 mb-1 ml-2"
                 >県名で絞り込み</label
               >
@@ -545,117 +589,507 @@
     </footer>
 
     <script>
-      // データ定義
+      // データ定義（No.1〜50のすべての座標を設定）
       let stationsData = [
         {
           id: 1,
-          rank: "A",
-          name: "すさみ町(和歌山県)",
+          rank: "A＋",
+          name: "すさみ",
           prefecture: "和歌山県",
           address: "和歌山県西牟婁郡すさみ町江住８０８−１",
           url: "https://www.youtube.com/watch?v=nhKyinmYK6k",
-          mapTop: "78%", // 紀伊半島先端付近
-          mapLeft: "55%",
-          color: "bg-orange-100 border-orange-300",
+          mapTop: "79%",
+          mapLeft: "56%",
         },
         {
           id: 2,
           rank: "S",
-          name: "越前町(福井県)",
+          name: "越前",
           prefecture: "福井県",
           address: "福井県丹生郡越前町厨７１−３３５−１",
           url: "https://www.youtube.com/watch?v=WMajkGinSXg",
-          mapTop: "55%", // 北陸
+          mapTop: "55%",
           mapLeft: "55%",
-          color: "bg-blue-100 border-blue-300",
         },
         {
           id: 3,
           rank: "A",
-          name: "飯高駅(三重県)",
+          name: "飯高駅",
           prefecture: "三重県",
           address: "三重県松阪市飯高町宮前１７７",
           url: "https://www.youtube.com/watch?v=CmH0R1-PIjw",
-          mapTop: "75%", // 紀伊半島東部
+          mapTop: "75%",
           mapLeft: "58%",
-          color: "bg-green-100 border-green-300",
         },
         {
           id: 4,
           rank: "S",
-          name: "マルメロの駅ながと(長野県)",
+          name: "マルメロの駅ながと",
           prefecture: "長野県",
-          address: "長野県小県郡長和町古町２６４３−３",
+          address: "長野県小県郡長和町古町２６４３－３",
           url: "https://www.youtube.com/watch?v=LrD97sLTDe4",
-          mapTop: "48%", // 中部内陸
-          mapLeft: "65%",
-          color: "bg-purple-100 border-purple-300",
+          mapTop: "48.5%",
+          mapLeft: "65.5%",
         },
         {
           id: 5,
-          rank: "A",
-          name: "世羅町(広島県)",
-          prefecture: "広島県",
-          address: "広島県世羅郡世羅町川尻2402-1",
-          url: "https://www.youtube.com/watch?v=QPMJFcp5f9I",
-          mapTop: "72%", // 中国地方
-          mapLeft: "39%",
-          color: "bg-red-100 border-red-300",
+          rank: "B",
+          name: "オアシスおぶせ",
+          prefecture: "長野県",
+          address: "長野県上高井郡小布施町大字大島６０１",
+          url: "https://www.youtube.com/watch?v=FHDszx1XFWg",
+          mapTop: "49%",
+          mapLeft: "63%",
         },
         {
           id: 6,
-          rank: "A",
-          name: "オアシスおぶせ(長野県)",
-          prefecture: "長野県",
-          address: "長野県上高井郡小布施町大島601",
-          url: "https://www.youtube.com/watch?v=FHDszx1XFWg",
-          mapTop: "42%", // 長野北部
-          mapLeft: "65%",
-          color: "bg-indigo-100 border-indigo-300",
+          rank: "C",
+          name: "世羅",
+          prefecture: "広島県",
+          address: "広島県世羅郡世羅町川尻２４０２－１",
+          url: "https://www.youtube.com/watch?v=QPMJFcp5f9I",
+          mapTop: "75%",
+          mapLeft: "38%",
         },
         {
           id: 7,
           rank: "E",
-          name: "フルーツ・フラワーパーク大沢(兵庫県)",
+          name: "神戸フルーツ・フラワーパーク大沢",
           prefecture: "兵庫県",
           address: "兵庫県神戸市北区大沢町上大沢2150",
           url: "https://www.youtube.com/watch?v=abWYDoZnNLQ",
-          mapTop: "70%", // 兵庫南部
-          mapLeft: "48%",
-          color: "bg-pink-100 border-pink-300",
+          mapTop: "70%",
+          mapLeft: "48.5%",
         },
         {
           id: 8,
           rank: "A",
-          name: "たからだの里さいた(香川県)",
+          name: "たからだの里さいた",
           prefecture: "香川県",
           address: "香川県三豊市財田町財田上180-6",
           url: "https://www.youtube.com/watch?v=vKnb0xCaC0Y",
-          mapTop: "85%", // 四国
+          mapTop: "85%",
           mapLeft: "35%",
-          color: "bg-yellow-100 border-yellow-300",
         },
         {
           id: 9,
-          rank: "A",
-          name: "三方五湖(福井県)",
+          rank: "C",
+          name: "三方五胡",
           prefecture: "福井県",
-          address: "福井県三方上中郡若狭町鳥浜122-31-1",
+          address: "福井県三方上中郡若狭町鳥浜",
           url: "https://www.youtube.com/watch?v=FNvIOAGG0ug",
-          mapTop: "53%", // 福井西部
-          mapLeft: "53%",
-          color: "bg-cyan-100 border-cyan-300",
+          mapTop: "54%",
+          mapLeft: "52%",
         },
         {
           id: 10,
           rank: "A",
-          name: "ふれあいパークみの(香川県)",
+          name: "ふれあいパークみの",
           prefecture: "香川県",
           address: "香川県三豊市三野町大見乙74",
           url: "https://www.youtube.com/watch?v=kCo0b7O9XQc",
-          mapTop: "85%", // 四国
+          mapTop: "85%",
           mapLeft: "40%",
-          color: "bg-teal-100 border-teal-300",
+        },
+        {
+          id: 11,
+          rank: "A",
+          name: "温泉の里神山",
+          prefecture: "徳島県",
+          address: "徳島県名西郡神山町神領字西上角151-1",
+          url: "https://www.youtube.com/watch?v=6gjY6DXUs08",
+          mapTop: "86%",
+          mapLeft: "42%",
+        },
+        {
+          id: 12,
+          rank: "A",
+          name: "いたの",
+          prefecture: "徳島県",
+          address: "徳島県板野郡板野町川端字中手崎39番地5",
+          url: "https://www.youtube.com/watch?v=m_RUiL0CNmk",
+          mapTop: "84%",
+          mapLeft: "44%",
+        },
+        {
+          id: 13,
+          rank: "A",
+          name: "中山盆地",
+          prefecture: "群馬県",
+          address: "群馬県吾妻郡高山村中山2357-1",
+          url: "https://www.youtube.com/watch?v=W5jf9nQ9pi4",
+          mapTop: "45%",
+          mapLeft: "70%",
+        },
+        {
+          id: 14,
+          rank: "A",
+          name: "小松オアシス",
+          prefecture: "愛媛県",
+          address: "愛媛県西条市小松町新屋敷乙22-29",
+          url: "https://www.youtube.com/watch?v=wsrya-DLJC8",
+          mapTop: "84%",
+          mapLeft: "31%",
+        },
+        {
+          id: 15,
+          rank: "B",
+          name: "びわ湖大橋米プラザ",
+          prefecture: "滋賀県",
+          address: "滋賀県大津市今堅田3丁目1-1",
+          url: "https://www.youtube.com/watch?v=OfDkg50AtdM",
+          mapTop: "60%",
+          mapLeft: "55%",
+        },
+        {
+          id: 16,
+          rank: "C",
+          name: "たかの",
+          prefecture: "広島県",
+          address: "広島県庄原市高野町下門田49",
+          url: "https://www.youtube.com/watch?v=sZI8o-ohyQM",
+          mapTop: "68%",
+          mapLeft: "40%",
+        },
+        {
+          id: 17,
+          rank: "A",
+          name: "古今伝授の里やまと",
+          prefecture: "岐阜県",
+          address: "岐阜県郡上市大和町剣164",
+          url: "https://www.youtube.com/watch?v=f2Ytl4DWZQk",
+          mapTop: "55%",
+          mapLeft: "60%",
+        },
+        {
+          id: 18,
+          rank: "A",
+          name: "ことなみ",
+          prefecture: "香川県",
+          address: "香川県仲多度郡まんのう町川東2355-1",
+          url: "https://www.youtube.com/watch?v=4YqHAt5oO30",
+          mapTop: "83%",
+          mapLeft: "37%",
+        },
+        {
+          id: 19,
+          rank: "B",
+          name: "奥河内くろまろの郷",
+          prefecture: "大阪府",
+          address: "大阪府河内長野市高向1218-1",
+          url: "https://www.youtube.com/watch?v=FLPI4tDX4-w",
+          mapTop: "72%",
+          mapLeft: "52%",
+        },
+        {
+          id: 20,
+          rank: "A",
+          name: "蛍街道西ノ市",
+          prefecture: "山口県",
+          address: "山口県下関市豊田町大字中村876-4",
+          url: "https://www.youtube.com/watch?v=QJ6uJO-1St0",
+          mapTop: "67%",
+          mapLeft: "30%",
+        },
+        {
+          id: 21,
+          rank: "A＋",
+          name: "神鍋高原",
+          prefecture: "兵庫県",
+          address: "兵庫県豊岡市日高町栗栖野59-13",
+          url: "https://www.youtube.com/watch?v=UjKFIPMUmx4",
+          mapTop: "62%",
+          mapLeft: "48%",
+        },
+        {
+          id: 22,
+          rank: "A",
+          name: "池田温泉",
+          prefecture: "岐阜県",
+          address: "岐阜県揖斐郡池田町片山1953-1",
+          url: "https://www.youtube.com/watch?v=P8U1tbWjiXI",
+          mapTop: "58%",
+          mapLeft: "58%",
+        },
+        {
+          id: 23,
+          rank: "B",
+          name: "しらとりの郷・羽曳野",
+          prefecture: "大阪府",
+          address: "大阪府羽曳野市埴生野975-3",
+          url: "https://www.youtube.com/watch?v=DAVgms1Z8Hc",
+          mapTop: "69%",
+          mapLeft: "53.5%",
+        },
+        {
+          id: 24,
+          rank: "C",
+          name: "キララ多伎",
+          prefecture: "島根県",
+          address: "島根県出雲市多伎町多岐135-1",
+          url: "https://www.youtube.com/watch?v=YzG_Nu_wDss",
+          mapTop: "62%",
+          mapLeft: "38%",
+        },
+        {
+          id: 25,
+          rank: "B",
+          name: "紀伊長島マンボウ",
+          prefecture: "三重県",
+          address: "三重県北牟婁郡紀北町東長島2410-73",
+          url: "https://www.youtube.com/watch?v=dHeIsfOTZyk",
+          mapTop: "78%",
+          mapLeft: "59%",
+        },
+        {
+          id: 26,
+          rank: "A",
+          name: "香南楽湯",
+          prefecture: "香川県",
+          address: "香川県高松市香南町横井997-2 ",
+          url: "https://www.youtube.com/watch?v=wrYhhThS9l4",
+          mapTop: "84%",
+          mapLeft: "39%",
+        },
+        {
+          id: 27,
+          rank: "A＋",
+          name: "うみんぴあ大飯",
+          prefecture: "福井県",
+          address: "福井県大飯郡おおい町成海1丁目1-2",
+          url: "https://www.youtube.com/watch?v=eb521YOpoA4",
+          mapTop: "57%",
+          mapLeft: "50%",
+        },
+        {
+          id: 28,
+          rank: "B",
+          name: "愛彩ランド",
+          prefecture: "大阪府",
+          address: "大阪府岸和田市三ヶ山町280-55",
+          url: "https://www.youtube.com/watch?v=ePS6X1jwCh4",
+          mapTop: "73%",
+          mapLeft: "50%",
+        },
+        {
+          id: 29,
+          rank: "A",
+          name: "なかとさ",
+          prefecture: "高知県",
+          address: "高知県高岡郡中土佐町久礼8009-11",
+          url: "https://www.youtube.com/watch?v=mCKs98ni_OQ",
+          mapTop: "92%",
+          mapLeft: "32%",
+        },
+        {
+          id: 30,
+          rank: "A",
+          name: "木の香",
+          prefecture: "高知県",
+          address: "高知県吾川郡いの町桑瀬225-16",
+          url: "https://www.youtube.com/watch?v=kGQfoC8gp_o",
+          mapTop: "90%",
+          mapLeft: "36%",
+        },
+        {
+          id: 31,
+          rank: "C",
+          name: "サンサンパーク白馬(道の駅ではない)",
+          prefecture: "長野県",
+          address: "長野県北安曇郡白馬村三日市場",
+          url: "https://www.youtube.com/watch?v=rVRwi8tyNGE",
+          mapTop: "45%",
+          mapLeft: "63%",
+        },
+        {
+          id: 32,
+          rank: "A",
+          name: "白馬",
+          prefecture: "長野県",
+          address: "長野県北安曇郡白馬村神城21462-1",
+          url: "https://www.youtube.com/watch?v=Tfm6rNlEJ7g",
+          mapTop: "46%",
+          mapLeft: "64.5%",
+        },
+        {
+          id: 33,
+          rank: "ー",
+          name: "宮の前公園キャンプ場(道の駅ではない)",
+          prefecture: "高知県",
+          address: "高知県高岡郡越知町越知丙734",
+          url: "https://www.youtube.com/watch?v=hbF6Uqf2piA",
+          mapTop: "91%",
+          mapLeft: "34%",
+        },
+        {
+          id: 34,
+          rank: "A",
+          name: "大社ご縁広場",
+          prefecture: "島根県",
+          address: "島根県出雲市大社町修理免735-5",
+          url: "https://www.youtube.com/watch?v=ogyhNnIHZJU",
+          mapTop: "64%",
+          mapLeft: "35.5%",
+        },
+        {
+          id: 35,
+          rank: "B＋",
+          name: "かよう",
+          prefecture: "岡山県",
+          address: "岡山県加賀郡吉備中央町北1977-1",
+          url: "https://www.youtube.com/watch?v=6ZslP1BKPPY",
+          mapTop: "72%",
+          mapLeft: "42%",
+        },
+        {
+          id: 36,
+          rank: "A＋",
+          name: "あいおい白龍城",
+          prefecture: "兵庫県",
+          address: "兵庫県相生市那波南本町8-55",
+          url: "https://www.youtube.com/watch?v=793dueG1rMs",
+          mapTop: "71%",
+          mapLeft: "45%",
+        },
+        {
+          id: 37,
+          rank: "A",
+          name: "伊勢本街道御杖",
+          prefecture: "奈良県",
+          address: "奈良県宇陀郡御杖村神末6330番地",
+          url: "https://www.youtube.com/watch?v=3Ie8gAJRccs",
+          mapTop: "72%",
+          mapLeft: "55%",
+        },
+        {
+          id: 38,
+          rank: "D",
+          name: "いが",
+          prefecture: "三重県",
+          address: "三重県伊賀市柘植町6187-1",
+          url: "https://www.youtube.com/watch?v=aWq-94_qej0",
+          mapTop: "68%",
+          mapLeft: "57%",
+        },
+        {
+          id: 39,
+          rank: "A",
+          name: "マイントピア別子",
+          prefecture: "愛媛県",
+          address: "愛媛県新居浜市立川707-3",
+          url: "https://www.youtube.com/watch?v=eRXWXKsafKY",
+          mapTop: "85%",
+          mapLeft: "33%",
+        },
+        {
+          id: 40,
+          rank: "B＋",
+          name: "みつ",
+          prefecture: "兵庫県",
+          address: "兵庫県たつの市御津町室津896-23",
+          url: "https://www.youtube.com/watch?v=778woSz5C80",
+          mapTop: "73%",
+          mapLeft: "47%",
+        },
+        {
+          id: 41,
+          rank: "A＋",
+          name: "大芝高原",
+          prefecture: "長野県",
+          address: "長野県上伊那郡南箕輪村2358番地5",
+          url: "https://www.youtube.com/watch?v=hFuJSES04Ko",
+          mapTop: "52.5%",
+          mapLeft: "63%",
+        },
+        {
+          id: 42,
+          rank: "B",
+          name: "今井恵の里",
+          prefecture: "長野県",
+          address: "長野県松本市大字今井886-2",
+          url: "https://www.youtube.com/watch?v=D3g5UopcQ90",
+          mapTop: "50%",
+          mapLeft: "61%",
+        },
+        {
+          id: 43,
+          rank: "C",
+          name: "妹子の郷",
+          prefecture: "滋賀県",
+          address: "滋賀県大津市和邇中528",
+          url: "https://www.youtube.com/watch?v=KGrSlbE0kYc",
+          mapTop: "65%",
+          mapLeft: "55%",
+        },
+        {
+          id: 44,
+          rank: "B＋",
+          name: "福良",
+          prefecture: "兵庫県",
+          address: "兵庫県南あわじ市福良甲1528-1",
+          url: "https://www.youtube.com/watch?v=4bfpYauVnAo",
+          mapTop: "80%",
+          mapLeft: "48%",
+        },
+        {
+          id: 45,
+          rank: "A",
+          name: "越前たけふ",
+          prefecture: "福井県",
+          address: "福井県越前市大屋町38-5-1",
+          url: "https://www.youtube.com/watch?v=zvpKTNHGh3c",
+          mapTop: "57%",
+          mapLeft: "56%",
+        },
+        {
+          id: 46,
+          rank: "A",
+          name: "丹波おばあちゃんの里",
+          prefecture: "兵庫県",
+          address: "兵庫県丹波市春日町七日市710",
+          url: "https://www.youtube.com/watch?v=aycnP2FBxYc",
+          mapTop: "66%",
+          mapLeft: "50%",
+        },
+        {
+          id: 47,
+          rank: "B＋",
+          name: "柿の郷くどやま",
+          prefecture: "和歌山県",
+          address: "和歌山県伊都郡九度山町入郷5-5",
+          url: "https://www.youtube.com/watch?v=axrfxRHDFjM",
+          mapTop: "75%",
+          mapLeft: "52%",
+        },
+        {
+          id: 48,
+          rank: "B",
+          name: "ゆうひパーク浜田",
+          prefecture: "島根県",
+          address: "島根県浜田市原井町1203-1",
+          url: "https://www.youtube.com/watch?v=AgibWfY_okA",
+          mapTop: "65%",
+          mapLeft: "33%",
+        },
+        {
+          id: 49,
+          rank: "A",
+          name: "奥津温泉",
+          prefecture: "岡山県",
+          address: "岡山県苫田郡鏡野町奥津463",
+          url: "https://www.youtube.com/watch?v=wKkEfoN-H00",
+          mapTop: "68%",
+          mapLeft: "42%",
+        },
+        {
+          id: 50,
+          rank: "A",
+          name: "椿はなの湯",
+          prefecture: "和歌山県",
+          address: "和歌山県西牟婁郡白浜町椿1058-1",
+          url: "https://www.youtube.com/watch?v=MyeNa6BbqV4",
+          mapTop: "77%",
+          mapLeft: "54%",
         },
       ];
 
@@ -669,12 +1103,8 @@
       const scrollArea = document.getElementById("scroll-area");
 
       function updateZoom() {
-        // 幅をパーセントで設定
         const newWidthPercent = currentZoom * 100;
-
         mapContent.style.width = `${newWidthPercent}%`;
-
-        // ズーム表示の更新
         zoomLevelText.textContent = `x${currentZoom.toFixed(2)}`;
       }
 
@@ -701,13 +1131,71 @@
         scrollArea.scrollLeft = 0;
       }
 
-      // --- 以下、既存のロジック ---
+      // --- アプリロジック ---
 
       const listContainer = document.getElementById("station-list");
       const mapPinsContainer = document.getElementById("map-pins-container");
       const rankFilterSelect = document.getElementById("rank-filter");
       const prefFilterSelect = document.getElementById("pref-filter");
       const filterCountLabel = document.getElementById("filter-count");
+
+      // ポップなカラーパレット（背景色と枠線色）
+      const popColors = [
+        { bg: "bg-orange-100", border: "border-orange-300" },
+        { bg: "bg-blue-100", border: "border-blue-300" },
+        { bg: "bg-green-100", border: "border-green-300" },
+        { bg: "bg-purple-100", border: "border-purple-300" },
+        { bg: "bg-yellow-100", border: "border-yellow-300" },
+        { bg: "bg-pink-100", border: "border-pink-300" },
+        { bg: "bg-teal-100", border: "border-teal-300" },
+        { bg: "bg-indigo-100", border: "border-indigo-300" },
+      ];
+
+      // ランクの基本クラス名を取得
+      function getRankBase(rank) {
+        const normalizeRank = rank.replace("＋", "+").toUpperCase();
+        if (normalizeRank.startsWith("S")) return "rank-s";
+        if (normalizeRank.startsWith("A")) return "rank-a";
+        if (normalizeRank.startsWith("B")) return "rank-b";
+        if (normalizeRank.startsWith("C")) return "rank-c"; // 緑
+        if (normalizeRank.startsWith("E")) return "rank-e"; // グレー
+        return "rank-other";
+      }
+
+      // バッジ用クラス
+      function getRankClass(rank) {
+        return getRankBase(rank);
+      }
+
+      // ピン用テキスト色クラス
+      function getPinColorClass(rank) {
+        return "text-" + getRankBase(rank);
+      }
+
+      // ピン吹き出し用ボーダー色クラス
+      function getPinBorderClass(rank) {
+        return "border-" + getRankBase(rank);
+      }
+
+      function initRankFilter() {
+        const rankOrder = ["S", "A＋", "A", "B＋", "B", "C", "D", "E", "ー"];
+        const ranks = [...new Set(stationsData.map((s) => s.rank))].sort(
+          (a, b) => {
+            const indexA = rankOrder.indexOf(a);
+            const indexB = rankOrder.indexOf(b);
+            if (indexA === -1) return 1;
+            if (indexB === -1) return -1;
+            return indexA - indexB;
+          }
+        );
+
+        ranks.forEach((rank) => {
+          const option = document.createElement("option");
+          option.value = rank;
+          option.textContent = `ランク ${rank}`;
+          rankFilterSelect.appendChild(option);
+        });
+      }
 
       function initPrefectureFilter() {
         const prefs = [
@@ -723,24 +1211,9 @@
         });
       }
 
-      function getRankClass(rank) {
-        switch (rank.toUpperCase()) {
-          case "S":
-            return "rank-s";
-          case "A":
-            return "rank-a";
-          case "B":
-            return "rank-b";
-          case "E":
-            return "rank-e";
-          default:
-            return "rank-other";
-        }
-      }
-
       function renderMapPins(data) {
         mapPinsContainer.innerHTML = "";
-        data.forEach((station, index) => {
+        data.forEach((station) => {
           if (
             station.name &&
             station.url &&
@@ -754,13 +1227,22 @@
             pinLink.style.top = station.mapTop;
             pinLink.style.left = station.mapLeft;
 
-            // 位置合わせのみ行う
+            // 位置合わせ
             pinLink.style.transform = `translate(-50%, -100%)`;
 
+            // ランクに基づく色
+            const pinColorClass = getPinColorClass(station.rank);
+            const pinBorderClass = getPinBorderClass(station.rank);
+
             pinLink.innerHTML = `
-                        <div class="pin-label text-xs">No.${station.id} ${station.name}</div>
-                        <i class="fas fa-map-marker-alt pin"></i>
-                    `;
+              <div class="pin-label ${pinBorderClass}">
+                <div class="text-xs">No.${station.id} ${station.name}</div>
+                <div class="text-[9px] font-normal mt-1 border-t border-gray-200 pt-1 text-gray-500 text-left w-full truncate">
+                  ${station.address}
+                </div>
+              </div>
+              <i class="fas fa-map-marker-alt pin ${pinColorClass}"></i>
+            `;
             mapPinsContainer.appendChild(pinLink);
           }
         });
@@ -777,38 +1259,42 @@
         data.forEach((station) => {
           if (station.name && station.url) {
             const rankClass = getRankClass(station.rank);
+
+            // ポップな色をIDに基づいて割り当てる（ランダムに見えるが固定的）
+            const colorIndex = (station.id - 1) % popColors.length;
+            const colorTheme = popColors[colorIndex];
+
             const card = document.createElement("a");
             card.href = station.url;
             card.target = "_blank";
-            card.className = `station-card block p-6 pt-8 rounded-xl border-4 ${
-              station.color || "bg-gray-100 border-gray-300"
-            } bg-white relative overflow-visible group`;
+            // 背景色とボーダー色を適用
+            card.className = `station-card block p-6 pt-8 rounded-xl border-4 ${colorTheme.bg} ${colorTheme.border} relative overflow-visible group`;
 
             card.innerHTML = `
-                        <div class="rank-badge ${rankClass}">
-                            ${station.rank}
-                        </div>
-                        <div class="absolute top-0 right-0 bg-gray-200 text-gray-600 font-bold px-3 py-1 rounded-bl-lg text-xs">
-                            No.${station.id}
-                        </div>
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-2xl">
-                                🚗
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors leading-tight">
-                                    ${station.name}
-                                </h3>
-                                <p class="text-sm text-gray-600 mb-2">
-                                    <i class="fas fa-map-marker-alt mr-1 text-red-400"></i>
-                                    ${station.address}
-                                </p>
-                                <span class="inline-flex items-center text-white bg-red-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm group-hover:bg-red-700 transition-colors">
-                                    <i class="fab fa-youtube mr-1"></i> 動画を見る
-                                </span>
-                            </div>
-                        </div>
-                    `;
+                <div class="rank-badge ${rankClass}">
+                    ${station.rank}
+                </div>
+                <div class="absolute top-0 right-0 bg-gray-200 text-gray-600 font-bold px-3 py-1 rounded-bl-lg text-xs">
+                    No.${station.id}
+                </div>
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm">
+                        🚗
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors leading-tight">
+                            ${station.name}
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-3 flex items-start">
+                            <i class="fas fa-map-marker-alt mr-1.5 mt-1 text-red-400 flex-shrink-0"></i>
+                            <span class="break-all">${station.address}</span>
+                        </p>
+                        <span class="inline-flex items-center text-white bg-red-600 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm group-hover:bg-red-700 transition-colors hover:shadow-md">
+                            <i class="fab fa-youtube mr-2"></i> 動画を見る
+                        </span>
+                    </div>
+                </div>
+            `;
             listContainer.appendChild(card);
           }
         });
@@ -838,6 +1324,7 @@
       }
 
       // 初期化処理
+      initRankFilter();
       initPrefectureFilter();
       applyFilters();
     </script>
