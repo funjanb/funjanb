@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ふんじゃんのB級でいこうぜ！道の駅マップ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* カスタムフォントと基本設定 */
+      body {
+        font-family: "Noto Sans JP", sans-serif;
+        background-color: #ffffff;
+        color: #333;
+      }
+
+      /* コンテナの幅制御 */
+      .content-width {
+        width: 100%;
+        max-width: 850px;
+        margin: 0 auto;
+      }
+
+      /* トップ画像のスタイル */
+      .top-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin-bottom: 2rem;
+      }
+
+      /* 見出しテキストのスタイル */
+      .sub-text {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #4b5563; /* text-gray-600 */
+        margin-bottom: 1.5rem;
+      }
+
+      .main-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #1f2937; /* text-gray-800 */
+        margin-bottom: 2rem;
+      }
+
+      /* 地図コンテナ */
+      .map-container {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        border: 2px solid #9ca3af; /* text-gray-400 */
+        background-color: #fff;
+        border-radius: 0;
+      }
+
+      /* 地図画像 */
+      .osaka-map {
+        width: 100%;
+        height: auto;
+        display: block;
+        filter: brightness(1.05) contrast(1.1);
+        transition: transform 0.3s;
+      }
+
+      .map-container:hover .osaka-map {
+        transform: scale(1.01);
+      }
+
+      /* ピンのデザイン */
+      .pin-wrapper {
+        position: absolute;
+        transform: translate(-50%, -100%);
+        cursor: pointer;
+        z-index: 10;
+        transition: transform 0.2s ease, z-index 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+      }
+
+      .pin-wrapper:hover {
+        transform: translate(-50%, -110%) scale(1.1);
+        z-index: 20;
+      }
+
+      /* ピンアイコン */
+      .pin-icon {
+        color: #dc2626;
+        font-size: 1.8rem;
+        animation: bounce 2s infinite;
+      }
+
+      /* 吹出し（道の駅名） - マル囲いなし、文字のみ */
+      .pin-label {
+        background: none;
+        border: none;
+        box-shadow: none;
+        color: #333;
+        padding: 0;
+        margin-bottom: 2px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        white-space: nowrap;
+        font-family: "Noto Sans JP", sans-serif;
+        text-shadow: 1px 1px 0 #fff, -1px 1px 0 #fff, 1px -1px 0 #fff,
+          -1px -1px 0 #fff;
+      }
+
+      /* モバイル調整 */
+      @media (max-width: 640px) {
+        .pin-icon {
+          font-size: 1.4rem;
+        }
+        .pin-label {
+          font-size: 0.7rem;
+        }
+        .main-title {
+          font-size: 1.5rem;
+        }
+      }
+
+      /* ピンのアニメーション */
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-8px);
+        }
+        60% {
+          transform: translateY(-4px);
+        }
+      }
+
+      /* リップルエフェクト */
+      .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 107, 0, 0.6);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+      }
+
+      @keyframes ripple {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex flex-col items-center justify-start py-0 px-4">
+    <!-- ヘッダーエリア -->
+    <header class="content-width text-center">
+      <!-- トップ画像 -->
+      <img
+        src="https://funjanb.github.io/funjanb/img/top1.jpg"
+        alt="ふんじゃんのB級でいこうぜ！"
+        class="top-image"
+      />
+
+      <!-- テキストエリア -->
+      <p class="sub-text">全国の激アツ道の駅をタップして動画をチェック！</p>
+
+      <h2 class="main-title">大阪府の「道の駅」情報</h2>
+    </header>
+
+    <!-- メインマップエリア -->
+    <main class="content-width flex justify-center mb-12">
+      <div class="map-container" id="mapContainer">
+        <!-- 地図画像 -->
+        <img
+          src="https://funjanb.github.io/funjanb/img/osaka.jpg"
+          alt="大阪府地図"
+          class="osaka-map"
+        />
+
+        <!-- ピンはJavaScriptでここに動的に生成されます -->
+      </div>
+    </main>
+
+    <!-- フッター -->
+    <footer
+      class="text-center text-gray-500 text-xs md:text-sm mt-auto pb-6 font-bold"
+    >
+      <p>&copy; ふんじゃんのB級でいこうぜ！ All Rights Reserved.</p>
+    </footer>
+
+    <script>
+      // 道の駅データ (10箇所)
+      // 座標(top, left)は大阪府の地図上の概算位置%で設定しています
+      const stations = [
+        {
+          name: "能勢（くりの郷）",
+          address: "大阪府豊能郡能勢町平野535",
+          url: "https://www.youtube.com/watch?v=8qm7EXimhcM",
+          // 北の基準点
+          top: 21,
+          left: 61,
+        },
+        {
+          name: "しらとりの郷・羽曳野",
+          address: "大阪府羽曳野市埴生野975-3",
+          url: "https://www.youtube.com/watch?v=DAVgms1Z8Hc",
+          // 愛彩ランド(84)より北、能勢(21)より南。東寄り。
+          top: 74,
+          left: 66,
+        },
+        {
+          name: "近つ飛鳥の里太子",
+          address: "大阪府南河内郡太子町大字山田２２５４ー３",
+          url: "https://www.youtube.com/watch?v=uKHyF_wxLAg",
+          // 羽曳野のすぐ東・南
+          top: 78,
+          left: 71,
+        },
+        {
+          name: "かなん",
+          address: "大阪府南河内郡河南町神山523-1",
+          url: "https://www.youtube.com/watch?v=S6F7nlmAOfY",
+          // 太子の南
+          top: 83,
+          left: 68,
+        },
+        {
+          name: "ちはやあかさか",
+          address: "大阪府南河内郡千早赤阪村二河原辺7",
+          url: "https://www.youtube.com/watch?v=zWmhIAqRoKM",
+          // かなんの南、奈良県境寄り
+          top: 85,
+          left: 67,
+        },
+        {
+          name: "いずみ山愛の里",
+          address: "大阪府和泉市仏並町398-1",
+          url: "https://www.youtube.com/watch?v=pkdyeFD5OBE",
+          // 愛彩ランド(84, 45.5)の少し北東
+          top: 83,
+          left: 50.5,
+        },
+        {
+          name: "奥河内くろまろの郷",
+          address: "大阪府河内長野市高向1218-1",
+          url: "https://www.youtube.com/watch?v=FLPI4tDX4-w",
+          // いずみより東、ちはやあかさかより西・南
+          top: 85,
+          left: 60,
+        },
+        {
+          name: "愛彩ランド",
+          address: "大阪府岸和田市岸の丘町3-6-18",
+          url: "https://www.youtube.com/watch?v=ePS6X1jwCh4",
+          // 南の基準点1
+          top: 84,
+          left: 45.5,
+        },
+        {
+          name: "みさき",
+          address: "大阪府泉南郡岬町淡輪5654-3",
+          url: "https://www.youtube.com/watch?v=K8a8Kfsqrak",
+          // 南の基準点2
+          top: 90,
+          left: 17,
+        },
+        {
+          name: "とっとパーク小島",
+          address: "大阪府泉南郡岬町多奈川小島455-1",
+          url: "https://www.youtube.com/watch?v=mbChGyOsCwE",
+          // 南の基準点3
+          top: 90,
+          left: 10,
+        },
+      ];
+
+      const mapContainer = document.getElementById("mapContainer");
+
+      function placePins() {
+        stations.forEach((station, index) => {
+          const pinWrapper = document.createElement("div");
+          pinWrapper.className = "pin-wrapper";
+          pinWrapper.style.top = station.top + "%";
+          pinWrapper.style.left = station.left + "%";
+          pinWrapper.style.animationDelay = index * 0.1 + "s";
+
+          // ピンの中身（名前とアイコン）
+          pinWrapper.innerHTML = `
+            <div class="pin-label">${station.name}</div>
+            <i class="fas fa-map-marker-alt pin-icon"></i>
+          `;
+
+          // クリックイベント
+          pinWrapper.addEventListener("click", (e) => {
+            // リップルエフェクト生成
+            const ripple = document.createElement("div");
+            ripple.className = "ripple";
+            ripple.style.width = "30px";
+            ripple.style.height = "30px";
+            ripple.style.left = "50%";
+            ripple.style.top = "80%";
+            pinWrapper.appendChild(ripple);
+
+            // アニメーション後に遷移
+            setTimeout(() => {
+              window.open(station.url, "_blank");
+            }, 300);
+          });
+
+          mapContainer.appendChild(pinWrapper);
+        });
+      }
+
+      window.onload = placePins;
+    </script>
+  </body>
+</html>
