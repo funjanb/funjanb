@@ -16,14 +16,13 @@
       href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;700&display=swap"
       rel="stylesheet"
     />
+
     <style>
       /* カスタムフォントと基本設定 */
       body {
         font-family: "Noto Sans JP", sans-serif;
         background-color: #ffffff;
         color: #333;
-        /* スクロールバウンスなどを防止（地図操作のため） */
-        overscroll-behavior: none;
       }
 
       /* コンテナの幅制御 */
@@ -47,7 +46,6 @@
         font-weight: bold;
         color: #4b5563; /* text-gray-600 */
         margin-bottom: 1.5rem;
-        line-height: 1.6;
       }
 
       .main-title {
@@ -57,70 +55,45 @@
         margin-bottom: 2rem;
       }
 
-      /* 地図コンテナ（ビューポート） */
-      .map-viewport {
+      /* 地図コンテナ */
+      .map-container {
         position: relative;
         width: 100%;
-        height: 0;
-        padding-bottom: 100%; /* 正方形に近いアスペクト比を確保（画像の比率に合わせて調整可） */
-        overflow: hidden; /* はみ出した部分を隠す */
-        border: 2px solid #9ca3af;
-        background-color: #f3f4f6;
-        cursor: grab;
-        touch-action: none; /* ブラウザのデフォルトのピンチ/スクロールを無効化 */
-      }
-
-      .map-viewport:active {
-        cursor: grabbing;
-      }
-
-      /* 移動・拡大縮小するレイヤー */
-      .map-movable-layer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        transform-origin: 0 0; /* 左上を基準に変形 */
-        /* JSでtransformを設定します */
+        overflow: hidden;
+        border: 2px solid #9ca3af; /* text-gray-400 */
+        background-color: #fff;
+        border-radius: 0;
       }
 
       /* 地図画像 */
       .osaka-map {
         width: 100%;
-        height: auto; /* 高さは自動調整 */
+        height: auto;
         display: block;
         filter: brightness(1.05) contrast(1.1);
-        pointer-events: none; /* 画像自体のドラッグ防止 */
-        user-select: none;
+        transition: transform 0.3s;
       }
 
-      /* ピンのラッパー（位置決め用） */
+      .map-container:hover .osaka-map {
+        transform: scale(1.01);
+      }
+
+      /* ピンのデザイン */
       .pin-wrapper {
         position: absolute;
-        /* transformはJSで制御（位置合わせと逆スケール） */
+        transform: translate(-50%, -100%);
         cursor: pointer;
         z-index: 10;
+        transition: transform 0.2s ease, z-index 0.2s;
         display: flex;
         flex-direction: column;
         align-items: center;
-        /* 拡大縮小時の原点を下に設定（地面に刺さっている位置） */
-        transform-origin: bottom center;
         filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
       }
 
       .pin-wrapper:hover {
+        transform: translate(-50%, -110%) scale(1.1);
         z-index: 20;
-        /* hover時の拡大はJS制御と競合するため、
-           inner要素で表現するか、フィルター等で表現 */
-        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3)) brightness(1.1);
-      }
-
-      /* アニメーション用コンテナ（スケール影響を受けずに跳ねさせるため） */
-      .pin-inner {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
       }
 
       /* ピンアイコン */
@@ -130,7 +103,7 @@
         animation: bounce 2s infinite;
       }
 
-      /* 吹出し（道の駅名） */
+      /* 吹出し（道の駅名） - マル囲いなし、文字のみ */
       .pin-label {
         background: none;
         border: none;
@@ -144,40 +117,6 @@
         font-family: "Noto Sans JP", sans-serif;
         text-shadow: 1px 1px 0 #fff, -1px 1px 0 #fff, 1px -1px 0 #fff,
           -1px -1px 0 #fff;
-        pointer-events: none; /* クリックを親に透過 */
-      }
-
-      /* コントロールボタン群 */
-      .map-controls {
-        position: absolute;
-        bottom: 16px;
-        right: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 50;
-      }
-
-      .control-btn {
-        width: 44px;
-        height: 44px;
-        background-color: rgba(255, 255, 255, 0.9);
-        border: 2px solid #d1d5db;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        color: #4b5563;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-        transition: all 0.2s;
-        touch-action: manipulation;
-      }
-
-      .control-btn:active {
-        background-color: #f3f4f6;
-        transform: scale(0.95);
       }
 
       /* モバイル調整 */
@@ -190,15 +129,6 @@
         }
         .main-title {
           font-size: 1.5rem;
-        }
-        /* マップの高さを少し調整 */
-        .map-viewport {
-          padding-bottom: 120%;
-        }
-        .control-btn {
-          width: 40px;
-          height: 40px;
-          font-size: 1rem;
         }
       }
 
@@ -227,12 +157,6 @@
         transform: scale(0);
         animation: ripple 0.6s linear;
         pointer-events: none;
-        top: 80%; /* ピンの足元付近 */
-        left: 50%;
-        width: 30px;
-        height: 30px;
-        margin-left: -15px; /* 中央寄せ補正 */
-        margin-top: -15px;
       }
 
       @keyframes ripple {
@@ -254,43 +178,22 @@
       />
 
       <!-- テキストエリア -->
-      <!-- 要望：スマホサイズで改行を入れる -->
-      <p class="sub-text">
-        全国の激アツ道の駅をタップして<br
-          class="block sm:hidden"
-        />動画をチェック！
-      </p>
+      <p class="sub-text">全国の激アツ道の駅をタップして動画をチェック！</p>
 
       <h2 class="main-title">大阪府の「道の駅」情報</h2>
     </header>
 
     <!-- メインマップエリア -->
     <main class="content-width flex justify-center mb-12">
-      <!-- ビューポート（のぞき窓） -->
-      <div class="map-viewport" id="mapViewport">
-        <!-- 移動・拡大縮小レイヤー -->
-        <div class="map-movable-layer" id="mapLayer">
-          <!-- 地図画像 -->
-          <img
-            src="https://funjanb.github.io/funjanb/img/osaka.jpg"
-            alt="大阪府地図"
-            class="osaka-map"
-          />
-          <!-- ピンはJavaScriptでここに動的に生成されます -->
-        </div>
+      <div class="map-container" id="mapContainer">
+        <!-- 地図画像 -->
+        <img
+          src="https://funjanb.github.io/funjanb/img/osaka.jpg"
+          alt="大阪府地図"
+          class="osaka-map"
+        />
 
-        <!-- コントロールボタン -->
-        <div class="map-controls">
-          <button class="control-btn" id="btnZoomIn" aria-label="拡大">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button class="control-btn" id="btnZoomOut" aria-label="縮小">
-            <i class="fas fa-minus"></i>
-          </button>
-          <button class="control-btn" id="btnHome" aria-label="リセット">
-            <i class="fas fa-home"></i>
-          </button>
-        </div>
+        <!-- ピンはJavaScriptでここに動的に生成されます -->
       </div>
     </main>
 
@@ -303,11 +206,13 @@
 
     <script>
       // 道の駅データ (10箇所)
+      // 座標(top, left)は大阪府の地図上の概算位置%で設定しています
       const stations = [
         {
           name: "能勢（くりの郷）",
           address: "大阪府豊能郡能勢町平野535",
           url: "https://www.youtube.com/watch?v=8qm7EXimhcM",
+          // 北の基準点
           top: 21,
           left: 61,
         },
@@ -315,6 +220,7 @@
           name: "しらとりの郷・羽曳野",
           address: "大阪府羽曳野市埴生野975-3",
           url: "https://www.youtube.com/watch?v=DAVgms1Z8Hc",
+          // 愛彩ランド(84)より北、能勢(21)より南。東寄り。
           top: 74,
           left: 66,
         },
@@ -322,6 +228,7 @@
           name: "近つ飛鳥の里太子",
           address: "大阪府南河内郡太子町大字山田２２５４ー３",
           url: "https://www.youtube.com/watch?v=uKHyF_wxLAg",
+          // 羽曳野のすぐ東・南
           top: 78,
           left: 71,
         },
@@ -329,6 +236,7 @@
           name: "かなん",
           address: "大阪府南河内郡河南町神山523-1",
           url: "https://www.youtube.com/watch?v=S6F7nlmAOfY",
+          // 太子の南
           top: 83,
           left: 68,
         },
@@ -336,6 +244,7 @@
           name: "ちはやあかさか",
           address: "大阪府南河内郡千早赤阪村二河原辺7",
           url: "https://www.youtube.com/watch?v=zWmhIAqRoKM",
+          // かなんの南、奈良県境寄り
           top: 85,
           left: 67,
         },
@@ -343,6 +252,7 @@
           name: "いずみ山愛の里",
           address: "大阪府和泉市仏並町398-1",
           url: "https://www.youtube.com/watch?v=pkdyeFD5OBE",
+          // 愛彩ランド(84, 45.5)の少し北東
           top: 83,
           left: 50.5,
         },
@@ -350,6 +260,7 @@
           name: "奥河内くろまろの郷",
           address: "大阪府河内長野市高向1218-1",
           url: "https://www.youtube.com/watch?v=FLPI4tDX4-w",
+          // いずみより東、ちはやあかさかより西・南
           top: 85,
           left: 60,
         },
@@ -357,6 +268,7 @@
           name: "愛彩ランド",
           address: "大阪府岸和田市岸の丘町3-6-18",
           url: "https://www.youtube.com/watch?v=ePS6X1jwCh4",
+          // 南の基準点1
           top: 84,
           left: 45.5,
         },
@@ -364,6 +276,7 @@
           name: "みさき",
           address: "大阪府泉南郡岬町淡輪5654-3",
           url: "https://www.youtube.com/watch?v=K8a8Kfsqrak",
+          // 南の基準点2
           top: 90,
           left: 17,
         },
@@ -371,313 +284,47 @@
           name: "とっとパーク小島",
           address: "大阪府泉南郡岬町多奈川小島455-1",
           url: "https://www.youtube.com/watch?v=mbChGyOsCwE",
+          // 南の基準点3
           top: 90,
           left: 10,
         },
       ];
 
-      const mapLayer = document.getElementById("mapLayer");
-      const mapViewport = document.getElementById("mapViewport");
+      const mapContainer = document.getElementById("mapContainer");
 
-      // --- ピンの生成 ---
       function placePins() {
         stations.forEach((station, index) => {
           const pinWrapper = document.createElement("div");
           pinWrapper.className = "pin-wrapper";
-          // %配置
           pinWrapper.style.top = station.top + "%";
           pinWrapper.style.left = station.left + "%";
+          pinWrapper.style.animationDelay = index * 0.1 + "s";
 
-          // ピン内部構造（アニメーション用とサイズ維持用を分離）
+          // ピンの中身（名前とアイコン）
           pinWrapper.innerHTML = `
-            <div class="pin-inner" style="animation-delay: ${index * 0.1}s">
-              <div class="pin-label">${station.name}</div>
-              <i class="fas fa-map-marker-alt pin-icon" style="animation-delay: ${
-                index * 0.1
-              }s"></i>
-            </div>
+            <div class="pin-label">${station.name}</div>
+            <i class="fas fa-map-marker-alt pin-icon"></i>
           `;
 
           // クリックイベント
           pinWrapper.addEventListener("click", (e) => {
-            // ドラッグ中のクリック誤動作を防ぐ
-            if (isDragging) return;
-
-            e.stopPropagation(); // マップへの伝播防止
-
-            // リップル生成
+            // リップルエフェクト生成
             const ripple = document.createElement("div");
             ripple.className = "ripple";
+            ripple.style.width = "30px";
+            ripple.style.height = "30px";
+            ripple.style.left = "50%";
+            ripple.style.top = "80%";
             pinWrapper.appendChild(ripple);
 
-            // 遷移
+            // アニメーション後に遷移
             setTimeout(() => {
               window.open(station.url, "_blank");
             }, 300);
           });
 
-          // タッチデバイスでのクリック遅延対策
-          pinWrapper.addEventListener(
-            "touchstart",
-            (e) => {
-              e.stopPropagation();
-            },
-            { passive: true }
-          );
-
-          mapLayer.appendChild(pinWrapper);
+          mapContainer.appendChild(pinWrapper);
         });
-
-        // 初回描画
-        // 画像読み込み完了を待ってから境界チェックしないと高さが0になる可能性がある
-        const img = document.querySelector(".osaka-map");
-        if (img.complete) {
-          updateTransform();
-        } else {
-          img.onload = updateTransform;
-        }
-      }
-
-      // --- 拡大縮小・ドラッグロジック ---
-      let scale = 1;
-      let pointX = 0; // 現在のX位置
-      let pointY = 0; // 現在のY位置
-      let startX = 0; // ドラッグ開始時のX
-      let startY = 0; // ドラッグ開始時のY
-      let isDragging = false;
-
-      // ピンチズーム用変数
-      let initialPinchDistance = null;
-      let initialScale = 1;
-
-      // 設定値：最大倍率を3倍に変更
-      const MIN_SCALE = 1;
-      const MAX_SCALE = 3;
-
-      function updateTransform() {
-        // マップレイヤーの移動と拡大
-        mapLayer.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-
-        // ピンの逆スケール処理（地図が拡大したら、ピンを縮小して一定サイズに見せる）
-        const pins = document.querySelectorAll(".pin-wrapper");
-        const inverseScale = 1 / scale;
-        pins.forEach((pin) => {
-          pin.style.transform = `translate(-50%, -100%) scale(${inverseScale})`;
-        });
-      }
-
-      // 境界制限関数（画像の高さを考慮して下限を設定）
-      function checkBoundaries() {
-        const viewportRect = mapViewport.getBoundingClientRect();
-        const img = document.querySelector(".osaka-map");
-
-        // 画像の実際のレンダリングサイズ（スケール前）を取得
-        const imgBaseHeight = img.offsetHeight;
-        // const imgBaseWidth = img.offsetWidth;
-
-        // 現在のマップの実寸
-        const mapWidth = viewportRect.width * scale; // 画像はwidth:100%なのでviewport幅基準
-        const mapHeight = imgBaseHeight * scale;
-
-        // X軸（横方向）の制限
-        if (pointX > 0) pointX = 0;
-        if (pointX < viewportRect.width - mapWidth)
-          pointX = viewportRect.width - mapWidth;
-
-        // Y軸（縦方向）の制限
-        // 上端の制限（下に下げすぎない）
-        if (pointY > 0) pointY = 0;
-
-        // 下端の制限（上に上げすぎない = 地図の下が見えないように）
-        // 地図の高さがビューポートより大きい場合のみ制限
-        if (mapHeight > viewportRect.height) {
-          const minY = viewportRect.height - mapHeight;
-          if (pointY < minY) {
-            pointY = minY;
-          }
-        } else {
-          // もし地図がビューポートより小さい場合（縮小しすぎ等）、上端固定
-          pointY = 0;
-        }
-      }
-
-      // マウスホイールでのズーム
-      mapViewport.addEventListener(
-        "wheel",
-        (e) => {
-          e.preventDefault();
-
-          const xs =
-            (e.clientX - mapViewport.getBoundingClientRect().left - pointX) /
-            scale;
-          const ys =
-            (e.clientY - mapViewport.getBoundingClientRect().top - pointY) /
-            scale;
-
-          const delta = -e.deltaY;
-          const factor = delta > 0 ? 1.1 : 0.9;
-          let newScale = scale * factor;
-
-          // 制限
-          newScale = Math.min(Math.max(newScale, MIN_SCALE), MAX_SCALE);
-
-          // スケールが変わった分、位置を補正してマウス位置を中心にズーム
-          pointX -= xs * (newScale - scale);
-          pointY -= ys * (newScale - scale);
-          scale = newScale;
-
-          // 境界チェック
-          checkBoundaries();
-          updateTransform();
-        },
-        { passive: false }
-      );
-
-      // ドラッグ操作（PC/Mobile共通処理用関数）
-      function startDrag(x, y) {
-        isDragging = false;
-        startX = x - pointX;
-        startY = y - pointY;
-      }
-
-      function moveDrag(x, y) {
-        isDragging = true;
-        pointX = x - startX;
-        pointY = y - startY;
-        checkBoundaries();
-        updateTransform();
-      }
-
-      // マウスイベント
-      mapViewport.addEventListener("mousedown", (e) => {
-        // ボタン操作等の場合は無視
-        if (e.target.closest(".map-controls")) return;
-
-        startDrag(e.clientX, e.clientY);
-        mapViewport.style.cursor = "grabbing";
-
-        const onMouseMove = (ev) => {
-          ev.preventDefault();
-          moveDrag(ev.clientX, ev.clientY);
-        };
-
-        const onMouseUp = () => {
-          mapViewport.style.cursor = "grab";
-          window.removeEventListener("mousemove", onMouseMove);
-          window.removeEventListener("mouseup", onMouseUp);
-          setTimeout(() => {
-            isDragging = false;
-          }, 50);
-        };
-
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
-      });
-
-      // タッチイベント（ピンチイン・アウト対応）
-      mapViewport.addEventListener(
-        "touchstart",
-        (e) => {
-          // ボタン操作等の場合は無視
-          if (e.target.closest(".map-controls")) return;
-
-          if (e.touches.length === 1) {
-            startDrag(e.touches[0].clientX, e.touches[0].clientY);
-          } else if (e.touches.length === 2) {
-            initialPinchDistance = getDistance(e.touches);
-            initialScale = scale;
-          }
-        },
-        { passive: true }
-      );
-
-      mapViewport.addEventListener(
-        "touchmove",
-        (e) => {
-          if (e.cancelable) e.preventDefault();
-
-          if (e.touches.length === 1) {
-            moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-          } else if (e.touches.length === 2 && initialPinchDistance) {
-            const currentDistance = getDistance(e.touches);
-            const distanceRatio = currentDistance / initialPinchDistance;
-
-            let newScale = initialScale * distanceRatio;
-            newScale = Math.min(Math.max(newScale, MIN_SCALE), MAX_SCALE);
-
-            // ズーム中心計算
-            const rect = mapViewport.getBoundingClientRect();
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            const xs = (centerX - pointX) / scale;
-            const ys = (centerY - pointY) / scale;
-
-            pointX -= xs * (newScale - scale);
-            pointY -= ys * (newScale - scale);
-
-            scale = newScale;
-            checkBoundaries();
-            updateTransform();
-          }
-        },
-        { passive: false }
-      );
-
-      mapViewport.addEventListener("touchend", (e) => {
-        initialPinchDistance = null;
-        setTimeout(() => {
-          isDragging = false;
-        }, 50);
-      });
-
-      function getDistance(touches) {
-        const dx = touches[0].clientX - touches[1].clientX;
-        const dy = touches[0].clientY - touches[1].clientY;
-        return Math.sqrt(dx * dx + dy * dy);
-      }
-
-      // --- ボタンコントロールのロジック ---
-      document.getElementById("btnZoomIn").addEventListener("click", (e) => {
-        e.stopPropagation();
-        changeScale(1.5);
-      });
-
-      document.getElementById("btnZoomOut").addEventListener("click", (e) => {
-        e.stopPropagation();
-        changeScale(1 / 1.5);
-      });
-
-      document.getElementById("btnHome").addEventListener("click", (e) => {
-        e.stopPropagation();
-        resetMap();
-      });
-
-      function changeScale(factor) {
-        let newScale = scale * factor;
-        newScale = Math.min(Math.max(newScale, MIN_SCALE), MAX_SCALE);
-
-        // 画面中央を中心にズーム
-        const rect = mapViewport.getBoundingClientRect();
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const xs = (centerX - pointX) / scale;
-        const ys = (centerY - pointY) / scale;
-
-        pointX -= xs * (newScale - scale);
-        pointY -= ys * (newScale - scale);
-        scale = newScale;
-
-        checkBoundaries();
-        updateTransform();
-      }
-
-      function resetMap() {
-        scale = 1;
-        pointX = 0;
-        pointY = 0;
-        updateTransform();
       }
 
       window.onload = placePins;
