@@ -81,7 +81,7 @@
       /* ピンのデザイン */
       .pin-wrapper {
         position: absolute;
-        transform: translate(-50%, -100%);
+        transform: translate(-50%, -100%); /* ピンの先端を座標に合わせる */
         cursor: pointer;
         z-index: 10;
         transition: transform 0.2s ease, z-index 0.2s;
@@ -99,7 +99,7 @@
       /* ピンアイコン */
       .pin-icon {
         color: #dc2626;
-        font-size: 1.5rem;
+        font-size: 1.5rem; /* PCデフォルトサイズ */
         animation: bounce 2s infinite;
       }
 
@@ -111,21 +111,24 @@
         color: #333;
         padding: 0;
         margin-bottom: 5px;
-        font-size: 0.7rem;
+        font-size: 0.7rem; /* PCデフォルトサイズ */
         font-weight: bold;
         white-space: nowrap;
         font-family: "Noto Sans JP", sans-serif;
         text-shadow: 1px 1px 0 #fff, -1px 1px 0 #fff, 1px -1px 0 #fff,
           -1px -1px 0 #fff;
+        /* 位置調整のために相対配置を有効化 */
+        position: relative;
       }
 
-      /* モバイル調整 */
+      /* モバイル調整 (640px以下) */
       @media (max-width: 640px) {
         .pin-icon {
-          font-size: 1.4rem;
+          font-size: 1rem; /* スマホで少し小さく (1.4rem -> 1.0rem) */
         }
         .pin-label {
-          font-size: 0.7rem;
+          font-size: 0.55rem; /* スマホで文字を小さく (0.7rem -> 0.55rem) */
+          margin-bottom: 2px; /* ピンとの距離も少し詰める */
         }
         .main-title {
           font-size: 1.5rem;
@@ -207,6 +210,8 @@
     <script>
       // 道の駅データ (10箇所)
       // 座標(top, left)は大阪府の地図上の概算位置%で設定しています
+      // 【追加機能】labelDx: 横方向の文字位置調整(px), labelDy: 縦方向の文字位置調整(px)
+      //  ※負の値で左/上、正の値で右/下に移動します
       const stations = [
         {
           name: "能勢（くりの郷）",
@@ -215,6 +220,8 @@
           // 北の基準点
           top: 21,
           left: 61,
+          labelDx: 0,
+          labelDy: 0,
         },
         {
           name: "しらとりの郷<br>・羽曳野",
@@ -223,6 +230,8 @@
           // 愛彩ランド(84)より北、能勢(21)より南。東寄り。
           top: 74,
           left: 66,
+          labelDx: -40, // 左にずらして重なり回避
+          labelDy: 0,
         },
         {
           name: "近つ飛鳥<br>の里太子",
@@ -231,6 +240,8 @@
           // 羽曳野のすぐ東・南
           top: 78,
           left: 71,
+          labelDx: 30, // 右にずらす
+          labelDy: -5, // 少し上に
         },
         {
           name: "かなん",
@@ -239,6 +250,8 @@
           // 太子の南
           top: 82,
           left: 68,
+          labelDx: 25, // 右にずらす
+          labelDy: 0,
         },
         {
           name: "ちはやあかさか",
@@ -247,6 +260,8 @@
           // かなんの南、奈良県境寄り
           top: 86,
           left: 67,
+          labelDx: 20, // 右にずらす
+          labelDy: 5, // 少し下に
         },
         {
           name: "いずみ<br>山愛の里",
@@ -255,6 +270,8 @@
           // 愛彩ランド(84, 45.5)の少し北東
           top: 82,
           left: 50.5,
+          labelDx: -10,
+          labelDy: -10, // 少し上に逃がす
         },
         {
           name: "奥河内<br>くろまろの郷",
@@ -263,6 +280,8 @@
           // いずみより東、ちはやあかさかより西・南
           top: 84.5,
           left: 60,
+          labelDx: 0,
+          labelDy: 0,
         },
         {
           name: "愛彩<br>ランド",
@@ -271,6 +290,8 @@
           // 南の基準点1
           top: 84,
           left: 45.5,
+          labelDx: -25, // 左にずらす
+          labelDy: 5,
         },
         {
           name: "みさき",
@@ -279,6 +300,8 @@
           // 南の基準点2
           top: 90,
           left: 17,
+          labelDx: 0,
+          labelDy: 0,
         },
         {
           name: "とっと<br>パーク小島",
@@ -287,6 +310,8 @@
           // 南の基準点3
           top: 90,
           left: 10,
+          labelDx: 0,
+          labelDy: 0,
         },
       ];
 
@@ -300,9 +325,14 @@
           pinWrapper.style.left = station.left + "%";
           pinWrapper.style.animationDelay = index * 0.1 + "s";
 
+          // 位置調整用の値を取得（設定がない場合は0）
+          const dx = station.labelDx || 0;
+          const dy = station.labelDy || 0;
+
           // ピンの中身（名前とアイコン）
+          // 名前部分(label)に transform: translate(...) を適用して位置をずらす
           pinWrapper.innerHTML = `
-            <div class="pin-label">${station.name}</div>
+            <div class="pin-label" style="transform: translate(${dx}px, ${dy}px)">${station.name}</div>
             <i class="fas fa-map-marker-alt pin-icon"></i>
           `;
 
