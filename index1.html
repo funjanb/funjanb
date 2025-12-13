@@ -82,13 +82,16 @@
       .pin-wrapper {
         position: absolute;
         transform: translate(-50%, -100%); /* ピンの先端を座標に合わせる */
-        cursor: pointer;
         z-index: 10;
         transition: transform 0.2s ease, z-index 0.2s;
         display: flex;
         flex-direction: column;
         align-items: center;
         filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+
+        /* ▼▼▼ クリック制御（PC・スマホ共通） ▼▼▼ */
+        /* ラッパー全体（ラベル含む）のクリック判定を無効化 */
+        pointer-events: none;
       }
 
       .pin-wrapper:hover {
@@ -99,8 +102,13 @@
       /* ピンアイコン */
       .pin-icon {
         color: #dc2626;
-        font-size: 1.8rem; /* PCデフォルトサイズ */
+        font-size: 1.5rem; /* PCデフォルトサイズ */
         animation: bounce 2s infinite;
+
+        /* ▼▼▼ クリック制御（PC・スマホ共通） ▼▼▼ */
+        /* アイコンのみクリック判定を有効化 */
+        pointer-events: auto;
+        cursor: pointer;
       }
 
       /* 吹出し（道の駅名） - マル囲いなし、文字のみ */
@@ -125,27 +133,8 @@
       @media (max-width: 640px) {
         .pin-icon {
           font-size: 1.2rem; /* スマホで少し小さく */
-        }
-        .pin-label {
-          font-size: 0.4rem; /* スマホで文字を小さく */
-          margin-bottom: 2px; /* ピンとの距離も少し詰める */
-        }
-        .main-title {
-          font-size: 1.4rem;
-        }
 
-        /* ▼▼▼ スマホ用タップ範囲の調整ここから ▼▼▼ */
-
-        /* ラベル（文字）とラッパー自体のクリック判定を無効化 */
-        .pin-wrapper,
-        .pin-label {
-          pointer-events: none;
-        }
-
-        /* ピンアイコンのみクリック判定を有効化 */
-        .pin-icon {
-          pointer-events: auto;
-
+          /* ▼▼▼ スマホ用タップ範囲の調整 ▼▼▼ */
           /* --- タップ範囲の広さ設定 --- */
           /* 0pxにするとアイコンの見た目通りの範囲（狭め）になります */
           /* 広げたい場合は 10px などを指定してください */
@@ -154,7 +143,13 @@
           /* タップ範囲を広げた際に位置がズレないようマージンで相殺（paddingと同じ値をマイナスで指定） */
           margin: 0px;
         }
-        /* ▲▲▲ スマホ用タップ範囲の調整ここまで ▲▲▲ */
+        .pin-label {
+          font-size: 0.4rem; /* スマホで文字を小さく */
+          margin-bottom: 2px; /* ピンとの距離も少し詰める */
+        }
+        .main-title {
+          font-size: 1.5rem;
+        }
       }
 
       /* ピンのアニメーション */
@@ -317,8 +312,8 @@
           // 南の基準点1
           top: 84,
           left: 45.5,
-          labelDx: -20, // 左にずらす
-          labelDy: 5,
+          labelDx: 0, // 左にずらす
+          labelDy: 0,
         },
         {
           name: "みさき",
