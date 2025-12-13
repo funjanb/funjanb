@@ -99,7 +99,7 @@
       /* ピンアイコン */
       .pin-icon {
         color: #dc2626;
-        font-size: 1.5rem; /* PCデフォルトサイズ */
+        font-size: 1.8rem; /* PCデフォルトサイズ */
         animation: bounce 2s infinite;
       }
 
@@ -124,15 +124,37 @@
       /* モバイル調整 (640px以下) */
       @media (max-width: 640px) {
         .pin-icon {
-          font-size: 1rem; /* スマホで少し小さく (1.4rem -> 1.0rem) */
+          font-size: 1.2rem; /* スマホで少し小さく */
         }
         .pin-label {
-          font-size: 0.55rem; /* スマホで文字を小さく (0.7rem -> 0.55rem) */
+          font-size: 0.5rem; /* スマホで文字を小さく */
           margin-bottom: 2px; /* ピンとの距離も少し詰める */
         }
         .main-title {
           font-size: 1.5rem;
         }
+
+        /* ▼▼▼ スマホ用タップ範囲の調整ここから ▼▼▼ */
+
+        /* ラベル（文字）とラッパー自体のクリック判定を無効化 */
+        .pin-wrapper,
+        .pin-label {
+          pointer-events: none;
+        }
+
+        /* ピンアイコンのみクリック判定を有効化 */
+        .pin-icon {
+          pointer-events: auto;
+
+          /* --- タップ範囲の広さ設定 --- */
+          /* 0pxにするとアイコンの見た目通りの範囲（狭め）になります */
+          /* 広げたい場合は 10px などを指定してください */
+          padding: 0px;
+
+          /* タップ範囲を広げた際に位置がズレないようマージンで相殺（paddingと同じ値をマイナスで指定） */
+          margin: 0px;
+        }
+        /* ▲▲▲ スマホ用タップ範囲の調整ここまで ▲▲▲ */
       }
 
       /* ピンのアニメーション */
@@ -181,7 +203,12 @@
       />
 
       <!-- テキストエリア -->
-      <p class="sub-text">全国の激アツ道の駅をタップして動画をチェック！</p>
+      <!-- スマホ表示時（sm未満）のみ改行を入れるために <br class="block sm:hidden"> を追加 -->
+      <p class="sub-text">
+        全国の激アツ道の駅をタップして<br
+          class="block sm:hidden"
+        />動画をチェック！
+      </p>
 
       <h2 class="main-title">大阪府の「道の駅」情報</h2>
     </header>
@@ -221,7 +248,7 @@
           top: 21,
           left: 61,
           labelDx: 0,
-          labelDy: 0,
+          labelDy: -5,
         },
         {
           name: "しらとりの郷<br>・羽曳野",
@@ -230,8 +257,8 @@
           // 愛彩ランド(84)より北、能勢(21)より南。東寄り。
           top: 74,
           left: 66,
-          labelDx: -40, // 左にずらして重なり回避
-          labelDy: 0,
+          labelDx: -0, // 左にずらして重なり回避
+          labelDy: -8,
         },
         {
           name: "近つ飛鳥<br>の里太子",
@@ -240,8 +267,8 @@
           // 羽曳野のすぐ東・南
           top: 78,
           left: 71,
-          labelDx: 30, // 右にずらす
-          labelDy: -5, // 少し上に
+          labelDx: 10, // 右にずらす
+          labelDy: -0, // 少し上に
         },
         {
           name: "かなん",
@@ -250,7 +277,7 @@
           // 太子の南
           top: 82,
           left: 68,
-          labelDx: 25, // 右にずらす
+          labelDx: 0, // 右にずらす
           labelDy: 0,
         },
         {
@@ -260,8 +287,8 @@
           // かなんの南、奈良県境寄り
           top: 86,
           left: 67,
-          labelDx: 20, // 右にずらす
-          labelDy: 5, // 少し下に
+          labelDx: 0, // 右にずらす
+          labelDy: 44, // 少し下に
         },
         {
           name: "いずみ<br>山愛の里",
@@ -270,8 +297,8 @@
           // 愛彩ランド(84, 45.5)の少し北東
           top: 82,
           left: 50.5,
-          labelDx: -10,
-          labelDy: -10, // 少し上に逃がす
+          labelDx: 0,
+          labelDy: 0, // 少し上に逃がす
         },
         {
           name: "奥河内<br>くろまろの郷",
@@ -290,7 +317,7 @@
           // 南の基準点1
           top: 84,
           left: 45.5,
-          labelDx: -25, // 左にずらす
+          labelDx: -20, // 左にずらす
           labelDy: 5,
         },
         {
@@ -300,8 +327,8 @@
           // 南の基準点2
           top: 90,
           left: 17,
-          labelDx: 0,
-          labelDy: 0,
+          labelDx: 29,
+          labelDy: 19,
         },
         {
           name: "とっと<br>パーク小島",
