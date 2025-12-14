@@ -1,16 +1,73 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" prefix="og: http://ogp.me/ns#">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ふんじゃんのB級でいこうぜ！道の駅マップ</title>
+
+    <!-- ▼▼▼ SEO対策エリア：検索エンジン・AI向け設定 ▼▼▼ -->
+    <title>
+      ふんじゃんのB級でいこうぜ！全国道の駅動画マップ（大阪・奈良公開中）
+    </title>
+
+    <!-- サイトの説明（検索結果の下に出る文章） -->
+    <meta
+      name="description"
+      content="大阪府・奈良県をはじめ、全国46都道府県の「道の駅」をYouTube動画で紹介するマップサイト。「ふんじゃんのB級でいこうぜ！」公式サイト。激アツな道の駅、B級グルメ、ドライブスポット情報を地図から探せます。"
+    />
+
+    <!-- キーワード（補助的ですが入れておきます） -->
+    <meta
+      name="keywords"
+      content="道の駅,大阪,奈良,動画,YouTube,B級グルメ,ドライブ,マップ,ふんじゃん"
+    />
+
+    <!-- OGP設定（SNSやAIでシェアされた時の表示設定） -->
+    <meta
+      property="og:title"
+      content="ふんじゃんのB級でいこうぜ！全国道の駅動画マップ"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:description"
+      content="地図上のピンをタップして、気になる道の駅の動画を即チェック！大阪・奈良エリア公開中。全国順次追加予定。"
+    />
+    <meta property="og:url" content="https://funjanb.github.io/funjanb/" />
+    <!-- 実際のURLに合わせてください -->
+    <meta
+      property="og:image"
+      content="https://funjanb.github.io/funjanb/img/top1.jpg"
+    />
+    <meta property="og:site_name" content="ふんじゃんのB級でいこうぜ！" />
+
+    <!-- X (Twitter) カード設定 -->
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- 構造化データ (JSON-LD) - AIやGoogleがサイト構造を理解するためのデータ -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ふんじゃんのB級でいこうぜ！",
+        "url": "https://funjanb.github.io/funjanb/",
+        "description": "全国の道の駅を動画で紹介するインタラクティブマップサイト",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://www.youtube.com/results?search_query=ふんじゃん+{search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <!-- ▲▲▲ SEO対策エリア終了 ▲▲▲ -->
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Font Awesome for Icons -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
     <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;700&display=swap"
@@ -37,7 +94,7 @@
         width: 100%;
         height: auto;
         display: block;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem; /* 少し詰めました */
       }
 
       /* 見出しテキストのスタイル */
@@ -46,6 +103,7 @@
         font-weight: bold;
         color: #4b5563; /* text-gray-600 */
         margin-bottom: 1.5rem;
+        line-height: 1.6;
       }
 
       .main-title {
@@ -53,6 +111,10 @@
         font-weight: bold;
         color: #1f2937; /* text-gray-800 */
         margin-bottom: 2rem;
+        margin-top: 3rem;
+        border-bottom: 4px solid #fcd34d; /* アンダーライン装飾 */
+        display: inline-block;
+        padding-bottom: 0.5rem;
       }
 
       /* 地図コンテナ */
@@ -63,10 +125,11 @@
         border: 2px solid #9ca3af; /* text-gray-400 */
         background-color: #fff;
         border-radius: 0;
+        margin-bottom: 4rem; /* マップ間の余白 */
       }
 
       /* 地図画像 */
-      .osaka-map {
+      .map-image {
         width: 100%;
         height: auto;
         display: block;
@@ -74,11 +137,11 @@
         transition: transform 0.3s;
       }
 
-      .map-container:hover .osaka-map {
+      .map-container:hover .map-image {
         transform: scale(1.01);
       }
 
-      /* ピンのデザイン */
+      /* ピンのデザイン - SEO対策のため <a>タグベースに変更 */
       .pin-wrapper {
         position: absolute;
         transform: translate(-50%, -100%); /* ピンの先端を座標に合わせる */
@@ -88,15 +151,18 @@
         flex-direction: column;
         align-items: center;
         filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+        text-decoration: none; /* リンクの下線を消す */
 
-        /* ▼▼▼ クリック制御（PC・スマホ共通） ▼▼▼ */
-        /* ラッパー全体（ラベル含む）のクリック判定を無効化 */
-        pointer-events: none;
+        /* タップしやすくする */
+        cursor: pointer;
+        pointer-events: auto;
       }
 
-      .pin-wrapper:hover {
+      .pin-wrapper:hover,
+      .pin-wrapper:focus {
         transform: translate(-50%, -110%) scale(1.1);
         z-index: 20;
+        outline: none; /* フォーカス時の枠線を消して自作のアニメーションに任せる */
       }
 
       /* ピンアイコン */
@@ -104,14 +170,9 @@
         color: #dc2626;
         font-size: 1.5rem; /* PCデフォルトサイズ */
         animation: bounce 2s infinite;
-
-        /* ▼▼▼ クリック制御（PC・スマホ共通） ▼▼▼ */
-        /* アイコンのみクリック判定を有効化 */
-        pointer-events: auto;
-        cursor: pointer;
       }
 
-      /* 吹出し（道の駅名） - マル囲いなし、文字のみ */
+      /* 吹出し（道の駅名） */
       .pin-label {
         background: none;
         border: none;
@@ -125,30 +186,23 @@
         font-family: "Noto Sans JP", sans-serif;
         text-shadow: 1px 1px 0 #fff, -1px 1px 0 #fff, 1px -1px 0 #fff,
           -1px -1px 0 #fff;
-        /* 位置調整のために相対配置を有効化 */
         position: relative;
       }
 
       /* モバイル調整 (640px以下) */
       @media (max-width: 640px) {
         .pin-icon {
-          font-size: 1rem; /* スマホで少し小さく */
-
-          /* ▼▼▼ スマホ用タップ範囲の調整 ▼▼▼ */
-          /* --- タップ範囲の広さ設定 --- */
-          /* 0pxにするとアイコンの見た目通りの範囲（狭め）になります */
-          /* 広げたい場合は 10px などを指定してください */
+          font-size: 1rem;
           padding: 0px;
-
-          /* タップ範囲を広げた際に位置がズレないようマージンで相殺（paddingと同じ値をマイナスで指定） */
           margin: 0px;
         }
         .pin-label {
-          font-size: 0.4rem; /* スマホで文字を小さく */
-          margin-bottom: 2px; /* ピンとの距離も少し詰める */
+          font-size: 0.5rem;
+          margin-bottom: 2px;
         }
         .main-title {
           font-size: 1.5rem;
+          margin-top: 2rem;
         }
       }
 
@@ -177,6 +231,12 @@
         transform: scale(0);
         animation: ripple 0.6s linear;
         pointer-events: none;
+        left: 50%;
+        top: 80%;
+        width: 30px;
+        height: 30px;
+        margin-left: -15px; /* 中央寄せ */
+        margin-top: -15px;
       }
 
       @keyframes ripple {
@@ -185,61 +245,117 @@
           opacity: 0;
         }
       }
+
+      /* SEO用：視覚的には消すが検索エンジンには読ませるクラス */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
     </style>
   </head>
   <body class="min-h-screen flex flex-col items-center justify-start py-0 px-4">
     <!-- ヘッダーエリア -->
     <header class="content-width text-center">
+      <!-- SEO対策: h1タグを追加（視覚的にはロゴ画像があるため非表示にするが、検索エンジンにはサイトの主題を伝える） -->
+      <h1 class="sr-only">
+        ふんじゃんのB級でいこうぜ！ 全国道の駅 動画紹介マップ
+      </h1>
+
       <!-- トップ画像 -->
       <img
         src="https://funjanb.github.io/funjanb/img/top1.jpg"
-        alt="ふんじゃんのB級でいこうぜ！"
+        alt="ふんじゃんのB級でいこうぜ！メインビジュアル"
         class="top-image"
+        width="850"
+        height="auto"
       />
 
       <!-- テキストエリア -->
-      <!-- スマホ表示時（sm未満）のみ改行を入れるために <br class="block sm:hidden"> を追加 -->
       <p class="sub-text">
-        全国の激アツ道の駅をタップして<br
-          class="block sm:hidden"
-        />動画をチェック！
+        全国46都道府県の激アツな「道の駅」を地図から探そう！<br />
+        ピンをタップして<span class="inline-block sm:hidden"><br /></span
+        >YouTube動画をチェック。
       </p>
-
-      <h2 class="main-title">大阪府の「道の駅」情報</h2>
+      <!-- SEO用テキスト追加 -->
+      <p class="text-xs text-gray-400 mb-4">
+        大阪府・奈良県のB級グルメ、車中泊スポット、観光情報を動画でお届けします。
+      </p>
     </header>
 
-    <!-- メインマップエリア -->
-    <main class="content-width flex justify-center mb-12">
-      <div class="map-container" id="mapContainer">
-        <!-- 地図画像 -->
+    <!-- 大阪府エリア -->
+    <section class="content-width flex flex-col items-center">
+      <h2 class="main-title">大阪府の「道の駅」</h2>
+      <div class="map-container" id="osakaMapContainer">
+        <!-- 大阪地図画像: alt属性を具体的に -->
         <img
-          src="https://funjanb.github.io/funjanb/img/osaka.jpg"
-          alt="大阪府地図"
-          class="osaka-map"
+          src="https://funjanb.github.io/funjanb/img/kinki-osaka.jpg"
+          alt="大阪府 道の駅マップ"
+          class="map-image"
+          loading="lazy"
         />
-
-        <!-- ピンはJavaScriptでここに動的に生成されます -->
+        <!-- ピンはJSで生成 -->
       </div>
-    </main>
+    </section>
+
+    <!-- 奈良県エリア -->
+    <section class="content-width flex flex-col items-center">
+      <h2 class="main-title">奈良県の「道の駅」</h2>
+      <div class="map-container" id="naraMapContainer">
+        <!-- 奈良地図画像 -->
+        <img
+          src="https://funjanb.github.io/funjanb/img/kinki-nara.jpg"
+          alt="奈良県 道の駅マップ"
+          class="map-image"
+          loading="lazy"
+        />
+        <!-- ピンはJSで生成 -->
+      </div>
+    </section>
+
+    <!-- 今後の展開エリア（キーワード対策） -->
+    <section class="content-width text-center my-8 p-4 bg-gray-50 rounded-lg">
+      <h3 class="font-bold text-gray-600 mb-2">全国制覇に向けて更新中！</h3>
+      <p class="text-sm text-gray-500">
+        現在は近畿地方（大阪・奈良）を中心に掲載していますが、北海道から沖縄まで、全国46都道府県の道の駅を順次追加予定です。
+      </p>
+    </section>
 
     <!-- フッター -->
     <footer
       class="text-center text-gray-500 text-xs md:text-sm mt-auto pb-6 font-bold"
     >
+      <nav class="mb-4">
+        <!-- 内部リンクやSNSリンクがあればここに配置 -->
+        <a
+          href="https://www.youtube.com/@%E3%81%B5%E3%82%93%E3%81%98%E3%82%83%E3%82%93%E3%81%AEB%E7%B4%9A%E3%81%A7%E3%81%84%E3%81%93%E3%81%86%E3%81%9C"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-red-500 transition-colors mx-2"
+        >
+          <i class="fab fa-youtube"></i> YouTubeチャンネル 登録をお願いします！
+        </a>
+      </nav>
       <p>&copy; ふんじゃんのB級でいこうぜ！ All Rights Reserved.</p>
     </footer>
 
     <script>
-      // 道の駅データ (10箇所)
-      // 座標(top, left)は大阪府の地図上の概算位置%で設定しています
-      // 【追加機能】labelDx: 横方向の文字位置調整(px), labelDy: 縦方向の文字位置調整(px)
-      //  ※負の値で左/上、正の値で右/下に移動します
-      const stations = [
+      /**
+       * 道の駅データ定義
+       */
+
+      // 大阪府データ
+      const osakaStations = [
         {
           name: "能勢（くりの郷）",
           address: "大阪府豊能郡能勢町平野535",
           url: "https://www.youtube.com/watch?v=8qm7EXimhcM",
-          // 北の基準点
           top: 21,
           left: 61,
           labelDx: 0,
@@ -249,57 +365,51 @@
           name: "しらとりの郷<br>・羽曳野",
           address: "大阪府羽曳野市埴生野975-3",
           url: "https://www.youtube.com/watch?v=DAVgms1Z8Hc",
-          // 愛彩ランド(84)より北、能勢(21)より南。東寄り。
           top: 74,
           left: 66,
-          labelDx: -0, // 左にずらして重なり回避
+          labelDx: -0,
           labelDy: -8,
         },
         {
           name: "近つ飛鳥<br>の里太子",
           address: "大阪府南河内郡太子町大字山田２２５４ー３",
           url: "https://www.youtube.com/watch?v=uKHyF_wxLAg",
-          // 羽曳野のすぐ東・南
           top: 78,
           left: 71,
-          labelDx: 23, // 右にずらす
-          labelDy: 8, // 少し上に
+          labelDx: 23,
+          labelDy: 8,
         },
         {
           name: "かなん",
           address: "大阪府南河内郡河南町神山523-1",
           url: "https://www.youtube.com/watch?v=S6F7nlmAOfY",
-          // 太子の南
           top: 82,
           left: 68,
-          labelDx: 0, // 右にずらす
+          labelDx: 0,
           labelDy: 0,
         },
         {
           name: "ちはやあかさか",
           address: "大阪府南河内郡千早赤阪村二河原辺7",
           url: "https://www.youtube.com/watch?v=zWmhIAqRoKM",
-          // かなんの南、奈良県境寄り
           top: 86,
           left: 67,
-          labelDx: 4, // 右にずらす
-          labelDy: 35, // 少し下に
+          labelDx: 4,
+          labelDy: 35,
         },
         {
           name: "いずみ<br>山愛の里",
           address: "大阪府和泉市仏並町398-1",
           url: "https://www.youtube.com/watch?v=pkdyeFD5OBE",
-          // 愛彩ランド(84, 45.5)の少し北東
           top: 82,
           left: 50.5,
           labelDx: -4,
-          labelDy: 0, // 少し上に逃がす
+          labelDy: 0,
         },
         {
           name: "奥河内<br>くろまろ<br>の郷",
           address: "大阪府河内長野市高向1218-1",
           url: "https://www.youtube.com/watch?v=FLPI4tDX4-w",
-          // いずみより東、ちはやあかさかより西・南
           top: 84.5,
           left: 60,
           labelDx: 0,
@@ -309,17 +419,15 @@
           name: "愛彩<br>ランド",
           address: "大阪府岸和田市岸の丘町3-6-18",
           url: "https://www.youtube.com/watch?v=ePS6X1jwCh4",
-          // 南の基準点1
           top: 84,
           left: 45.5,
-          labelDx: -15, // 左にずらす
+          labelDx: -15,
           labelDy: 5,
         },
         {
           name: "みさき",
           address: "大阪府泉南郡岬町淡輪5654-3",
           url: "https://www.youtube.com/watch?v=K8a8Kfsqrak",
-          // 南の基準点2
           top: 90,
           left: 17,
           labelDx: 15,
@@ -329,7 +437,6 @@
           name: "とっと<br>パーク小島",
           address: "大阪府泉南郡岬町多奈川小島455-1",
           url: "https://www.youtube.com/watch?v=mbChGyOsCwE",
-          // 南の基準点3
           top: 90,
           left: 10,
           labelDx: -8,
@@ -337,49 +444,209 @@
         },
       ];
 
-      const mapContainer = document.getElementById("mapContainer");
+      // 奈良県データ
+      const naraStations = [
+        {
+          name: "吉野路 大塔",
+          address: "奈良県五條市大塔町阪本225-6",
+          url: "https://www.youtube.com/watch?v=mGh0jNSMxs4",
+          top: 61,
+          left: 40.5,
+          labelDx: -25,
+          labelDy: 0,
+        },
+        {
+          name: "杉の湯 川上",
+          address: "奈良県吉野郡川上村迫695",
+          url: "https://www.youtube.com/watch?v=1te1yvq9-Ck",
+          top: 50,
+          left: 60,
+          labelDx: 20,
+          labelDy: 0,
+        },
+        {
+          name: "吉野路 黒滝",
+          address: "奈良県吉野郡黒滝村大字長瀬22",
+          url: "https://www.youtube.com/watch?v=ZQ9xKzrbQbw",
+          top: 52,
+          left: 49,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "ふたかみ<br>パーク當麻",
+          address: "奈良県葛城市新在家402-1",
+          url: "https://www.youtube.com/watch?v=U0lbgurhbYE",
+          top: 31,
+          left: 37,
+          labelDx: -15,
+          labelDy: -5,
+        },
+        {
+          name: "宇陀路大宇陀",
+          address: "奈良県宇陀市大宇陀拾生714-1",
+          url: "https://www.youtube.com/watch?v=UujLae8dBio",
+          top: 36,
+          left: 58,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "十津川郷",
+          address: "奈良県吉野郡十津川村大字小原225-1",
+          url: "https://www.youtube.com/watch?v=3up-6y6YVig",
+          top: 85,
+          left: 45,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "宇陀路室生",
+          address: "奈良県宇陀市室生三本松3176-1",
+          url: "https://www.youtube.com/watch?v=ncKvhcwBH1U",
+          top: 26,
+          left: 65,
+          labelDx: 15,
+          labelDy: 0,
+        },
+        {
+          name: "針テラス",
+          address: "奈良県奈良市針町345",
+          url: "https://www.youtube.com/watch?v=U5hJIcld5MQ",
+          top: 22,
+          left: 60,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "大和路へぐり",
+          address: "奈良県生駒郡平群町平等寺75-1",
+          url: "https://www.youtube.com/watch?v=9VN73yS7FxI",
+          top: 20,
+          left: 38,
+          labelDx: 0,
+          labelDy: -5,
+        },
+        {
+          name: "吉野路<br>大淀iセンター",
+          address: "奈良県吉野郡大淀町大字芦原536-1",
+          url: "https://www.youtube.com/watch?v=42NXpLy8ICk",
+          top: 44,
+          left: 46,
+          labelDx: 0,
+          labelDy: 5,
+        },
+        {
+          name: "伊勢本街道 御杖",
+          address: "奈良県宇陀郡御杖村大字神末6325",
+          url: "https://www.youtube.com/watch?v=3Ie8gAJRccs",
+          top: 31,
+          left: 79,
+          labelDx: 15,
+          labelDy: 0,
+        },
+        {
+          name: "かつらぎ",
+          address: "奈良県葛城市太田1257",
+          url: "https://www.youtube.com/watch?v=DOuhwer3s6A",
+          top: 35,
+          left: 38,
+          labelDx: 0,
+          labelDy: 10,
+        },
+        {
+          name: "レスティ<br>唐古・鍵",
+          address: "奈良県磯城郡田原本町大字唐古70-1",
+          url: "https://www.youtube.com/watch?v=6f3GpFOSrWU",
+          top: 28,
+          left: 45,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "飛鳥",
+          address: "奈良県高市郡明日香村越6-2",
+          url: "https://www.youtube.com/watch?v=z8MGCW6gf3E",
+          top: 36.5,
+          left: 45,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "なら歴史<br>芸術文化村",
+          address: "奈良県天理市杣之内町437-3",
+          url: "https://www.youtube.com/watch?v=2jKv3r5ExBA",
+          top: 25,
+          left: 51,
+          labelDx: 25,
+          labelDy: 0,
+        },
+        {
+          name: "吉野路上北山",
+          address: "奈良県吉野郡上北山村河合1-1",
+          url: "https://www.youtube.com/watch?v=707kJl9Fl_A",
+          top: 69,
+          left: 63,
+          labelDx: -10,
+          labelDy: 0,
+        },
+      ];
 
-      function placePins() {
-        stations.forEach((station, index) => {
-          const pinWrapper = document.createElement("div");
+      /**
+       * マップ描画関数
+       * ★SEO修正：div clickではなく、<a>タグを生成するように変更
+       */
+      function renderMap(containerId, stationData) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        stationData.forEach((station, index) => {
+          // SEO対策：divではなくaタグを作成
+          const pinWrapper = document.createElement("a");
+
+          // リンク先を設定
+          pinWrapper.href = station.url;
+          pinWrapper.target = "_blank"; // 別タブで開く
+          pinWrapper.rel = "noopener noreferrer"; // セキュリティ対策
+          // 検索エンジンにリンクの意味を伝えるためのタイトル属性
+          pinWrapper.title = `${station.name}の動画を見る（YouTube）`;
+
           pinWrapper.className = "pin-wrapper";
           pinWrapper.style.top = station.top + "%";
           pinWrapper.style.left = station.left + "%";
-          pinWrapper.style.animationDelay = index * 0.1 + "s";
+          pinWrapper.style.animationDelay = index * 0.05 + "s";
 
-          // 位置調整用の値を取得（設定がない場合は0）
           const dx = station.labelDx || 0;
           const dy = station.labelDy || 0;
 
-          // ピンの中身（名前とアイコン）
-          // 名前部分(label)に transform: translate(...) を適用して位置をずらす
           pinWrapper.innerHTML = `
             <div class="pin-label" style="transform: translate(${dx}px, ${dy}px)">${station.name}</div>
             <i class="fas fa-map-marker-alt pin-icon"></i>
           `;
 
-          // クリックイベント
+          // クリック時のリップルエフェクト（装飾用）
           pinWrapper.addEventListener("click", (e) => {
-            // リップルエフェクト生成
+            // <a>タグのデフォルト遷移を一瞬遅らせてエフェクトを見せる場合
+            // ただしUX的には即時遷移が好ましいため、単純に装飾として追加
             const ripple = document.createElement("div");
             ripple.className = "ripple";
-            ripple.style.width = "30px";
-            ripple.style.height = "30px";
-            ripple.style.left = "50%";
-            ripple.style.top = "80%";
             pinWrapper.appendChild(ripple);
 
-            // アニメーション後に遷移
+            // <a>タグなので、JSでの window.open は不要
+            // リップルを消すためのタイマーだけセット
             setTimeout(() => {
-              window.open(station.url, "_blank");
-            }, 300);
+              ripple.remove();
+            }, 600);
           });
 
-          mapContainer.appendChild(pinWrapper);
+          container.appendChild(pinWrapper);
         });
       }
 
-      window.onload = placePins;
+      window.onload = function () {
+        renderMap("osakaMapContainer", osakaStations);
+        renderMap("naraMapContainer", naraStations);
+      };
     </script>
   </body>
 </html>
