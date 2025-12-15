@@ -12,7 +12,7 @@
     <!-- サイトの説明（検索結果の下に出る文章） -->
     <meta
       name="description"
-      content="大阪府・奈良県をはじめ、全国46都道府県の「道の駅」をYouTube動画で紹介するマップサイト。「ふんじゃんのB級でいこうぜ！」公式サイト。激アツな道の駅、車中泊、スーパー、温泉、ドライブスポット情報を地図から探せます。"
+      content="大阪府・京都府・奈良県をはじめ、全国46都道府県の「道の駅」をYouTube動画で紹介するマップサイト。「ふんじゃんのB級でいこうぜ！」公式サイト。激アツな道の駅、車中泊、スーパー、温泉、ドライブスポット情報を地図から探せます。"
     />
 
     <!-- キーワード（補助的ですが入れておきます） -->
@@ -304,6 +304,21 @@
       </div>
     </section>
 
+    <!-- 京都府エリア -->
+    <section class="content-width flex flex-col items-center">
+      <h2 class="main-title">京都府の「道の駅」</h2>
+      <div class="map-container" id="kyotoMapContainer">
+        <!-- 京都地図画像: alt属性を具体的に -->
+        <img
+          src="https://funjanb.github.io/funjanb/img/kinki-kyoto.jpg"
+          alt="京都府 道の駅マップ"
+          class="map-image"
+          loading="lazy"
+        />
+        <!-- ピンはJSで生成 -->
+      </div>
+    </section>
+
     <!-- 奈良県エリア -->
     <section class="content-width flex flex-col items-center">
       <h2 class="main-title">奈良県の「道の駅」</h2>
@@ -323,7 +338,7 @@
     <section class="content-width text-center my-8 p-4 bg-gray-50 rounded-lg">
       <h3 class="font-bold text-gray-600 mb-2">全国制覇に向けて更新中！</h3>
       <p class="text-sm text-gray-500">
-        現在は近畿地方（大阪・奈良）を中心に掲載していますが、北海道から沖縄まで、全国46都道府県の道の駅を順次追加予定です。
+        現在は近畿地方を中心に掲載していますが、北海道から沖縄まで、全国46都道府県の道の駅を順次追加予定です。
       </p>
     </section>
 
@@ -440,6 +455,145 @@
           top: 90,
           left: 10,
           labelDx: -8,
+          labelDy: 0,
+        },
+      ];
+
+      // 京都府データ (Top/Leftは地図画像に合わせて推定値を設定)
+      const kyotoStations = [
+        {
+          name: "舟屋の里伊根",
+          address: "京都府与謝郡伊根町字亀島459",
+          url: "https://www.youtube.com/watch?v=V3z17KIGJDE",
+          top: 15.5,
+          left: 38.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "てんきてんき丹後",
+          address: "京都府京丹後市丹後町竹野313-1",
+          url: "https://www.youtube.com/watch?v=64nffnw29VQ",
+          top: 11.0,
+          left: 28.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "和",
+          address: "京都府船井郡京丹波町坂原上モジリ11番地",
+          url: "https://www.youtube.com/watch?v=MJ-1J-DZs9M",
+          top: 53.0,
+          left: 46.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "ガレリアかめおか",
+          address: "京都府亀岡市余部町宝久保1-1",
+          url: "https://www.youtube.com/watch?v=i5oit1qnMXI",
+          top: 73.0,
+          left: 58.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "丹波<br>マーケス",
+          address: "京都府船井郡京丹波町須知色紙田3-5",
+          url: "https://www.youtube.com/watch?v=aP6kYynyxLs",
+          top: 61.0,
+          left: 48.0,
+          labelDx: 14,
+          labelDy: 3,
+        },
+        {
+          name: "瑞穂の里<br>・さらびき",
+          address: "京都府船井郡京丹波町大朴休石10-1",
+          url: "https://www.youtube.com/watch?v=PYsv8VLH7g4",
+          top: 60.0,
+          left: 42.0,
+          labelDx: -35,
+          labelDy: 10,
+        },
+        {
+          name: "舞鶴港とれとれセンター",
+          address: "京都府舞鶴市下福井905",
+          url: "https://www.youtube.com/watch?v=PMPFfCdx5Bg",
+          top: 38.0,
+          left: 40.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "京都新光悦村",
+          address: "京都府南丹市園部町曽我谷縄手15-3",
+          url: "https://www.youtube.com/watch?v=4PBW6ZdgE7g",
+          top: 66.5,
+          left: 52.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "丹後王国食のみやこ",
+          address: "京都府京丹後市弥栄町鳥取123",
+          url: "https://www.youtube.com/watch?v=C9w0rFW1h4U",
+          top: 16.0,
+          left: 23.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "美山<br>ふれあい広場",
+          address: "京都府南丹市美山町安掛下23-1",
+          url: "https://www.youtube.com/watch?v=coToo8VB8RM",
+          top: 51.0,
+          left: 60.0,
+          labelDx: 25,
+          labelDy: 0,
+        },
+        {
+          name: "ウッディー<br>京北",
+          address: "京都府右京区京北周山町上寺田1-1",
+          url: "https://www.youtube.com/watch?v=ToHmcPqVQF0",
+          top: 62.0,
+          left: 62.5,
+          labelDx: 20,
+          labelDy: 5,
+        },
+        {
+          name: "くみはまSANKAIKAN",
+          address: "京都府京丹後市久美浜町浦明1709",
+          url: "https://www.youtube.com/watch?v=2tNappKbHhQ",
+          top: 22.0,
+          left: 14.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "スプリングス<br>ひよし",
+          address: "京都府南丹市日吉町中宮ノ向8",
+          url: "https://www.youtube.com/watch?v=tke-6u1LI4E",
+          top: 61.0,
+          left: 55.0,
+          labelDx: 17,
+          labelDy: 0,
+        },
+        {
+          name: "お茶の京都 みなみやましろ村",
+          address: "京都府相楽郡南山城村大字北大河原小字殿田102",
+          url: "https://www.youtube.com/watch?v=Slj205tmC2g",
+          top: 92.0,
+          left: 91.0,
+          labelDx: 0,
+          labelDy: 0,
+        },
+        {
+          name: "京丹波<br> 味夢の里",
+          address: "京都府船井郡京丹波町曽根深シノ65-1",
+          url: "https://www.youtube.com/watch?v=pSMHuMtAsK4",
+          top: 60.0,
+          left: 45.0,
+          labelDx: -10,
           labelDy: 0,
         },
       ];
@@ -645,6 +799,7 @@
 
       window.onload = function () {
         renderMap("osakaMapContainer", osakaStations);
+        renderMap("kyotoMapContainer", kyotoStations);
         renderMap("naraMapContainer", naraStations);
       };
     </script>
