@@ -141,7 +141,8 @@
         transform: scale(1.01);
       }
 
-      /* ピンのデザイン - SEO対策のため <a>タグベースに変更 */
+      /* ピンのラッパー（位置決め専用コンテナ） */
+      /* 変更点: aタグからdivに変更し、クリックイベントを透過させる設定を追加 */
       .pin-wrapper {
         position: absolute;
         transform: translate(-50%, -100%); /* ピンの先端を座標に合わせる */
@@ -151,18 +152,30 @@
         flex-direction: column;
         align-items: center;
         filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
-        text-decoration: none; /* リンクの下線を消す */
+        text-decoration: none;
 
-        /* タップしやすくする */
-        cursor: pointer;
-        pointer-events: auto;
+        /* ▼▼▼ 重要な変更点 ▼▼▼ */
+        pointer-events: none; /* コンテナ自体はクリックを透過（下のピンを押せるように） */
+        /* ▲▲▲ 重要な変更点 ▲▲▲ */
       }
 
+      /* ホバー時の挙動 */
+      /* 子要素（アイコン）にホバーしたときに、親（これ）が拡大する */
       .pin-wrapper:hover,
-      .pin-wrapper:focus {
+      .pin-wrapper:focus-within {
         transform: translate(-50%, -110%) scale(1.1);
         z-index: 20;
-        outline: none; /* フォーカス時の枠線を消して自作のアニメーションに任せる */
+      }
+
+      /* ピンアイコンのリンク部分 */
+      /* 新規追加: ここだけクリック可能にする */
+      .pin-link {
+        pointer-events: auto; /* ここだけクリック有効 */
+        cursor: pointer;
+        display: block;
+        outline: none;
+        color: inherit;
+        text-decoration: none;
       }
 
       /* ピンアイコン */
@@ -187,6 +200,9 @@
         text-shadow: 1px 1px 0 #fff, -1px 1px 0 #fff, 1px -1px 0 #fff,
           -1px -1px 0 #fff;
         position: relative;
+
+        /* 念のため明示的に透過 */
+        pointer-events: none;
       }
 
       /* モバイル調整 (640px以下) */
@@ -232,7 +248,7 @@
         animation: ripple 0.6s linear;
         pointer-events: none;
         left: 50%;
-        top: 80%;
+        top: 50%; /* アイコン中心から広がるように調整 */
         width: 30px;
         height: 30px;
         margin-left: -15px; /* 中央寄せ */
@@ -285,7 +301,7 @@
       </p>
       <!-- SEO用テキスト追加 -->
       <p class="text-xs text-gray-400 mb-4">
-        大阪府・奈良県の車中泊スポット、観光情報を動画でお届けします。
+        大阪府・京都府・奈良県の車中泊スポット、観光情報を動画でお届けします。
       </p>
     </header>
 
@@ -459,7 +475,7 @@
         },
       ];
 
-      // 京都府データ (Top/Leftは地図画像に合わせて推定値を設定)
+      // 京都府データ
       const kyotoStations = [
         {
           name: "舟屋の里伊根",
@@ -483,8 +499,8 @@
           name: "和",
           address: "京都府船井郡京丹波町坂原上モジリ11番地",
           url: "https://www.youtube.com/watch?v=MJ-1J-DZs9M",
-          top: 53.0,
-          left: 46.0,
+          top: 52.0,
+          left: 46.5,
           labelDx: 0,
           labelDy: 0,
         },
@@ -579,7 +595,7 @@
           labelDy: 0,
         },
         {
-          name: "お茶の京都 みなみやましろ村",
+          name: "お茶の京都<br>みなみやましろ村",
           address: "京都府相楽郡南山城村大字北大河原小字殿田102",
           url: "https://www.youtube.com/watch?v=Slj205tmC2g",
           top: 92.0,
@@ -757,23 +773,17 @@
 
       /**
        * マップ描画関数
-       * ★SEO修正：div clickではなく、<a>タグを生成するように変更
+       * ★修正: 全体を<a>タグにするのではなく、アイコンのみリンクにするよう変更
+       * ★修正: コンテナ(.pin-wrapper)とラベル(.pin-label)はクリックを透過(pointer-events: none)させ、
+       * 誤タップを防ぐ仕様に変更
        */
       function renderMap(containerId, stationData) {
         const container = document.getElementById(containerId);
         if (!container) return;
 
         stationData.forEach((station, index) => {
-          // SEO対策：divではなくaタグを作成
-          const pinWrapper = document.createElement("a");
-
-          // リンク先を設定
-          pinWrapper.href = station.url;
-          pinWrapper.target = "_blank"; // 別タブで開く
-          pinWrapper.rel = "noopener noreferrer"; // セキュリティ対策
-          // 検索エンジンにリンクの意味を伝えるためのタイトル属性
-          pinWrapper.title = `${station.name}の動画を見る（YouTube）`;
-
+          // コンテナは div で作成
+          const pinWrapper = document.createElement("div");
           pinWrapper.className = "pin-wrapper";
           pinWrapper.style.top = station.top + "%";
           pinWrapper.style.left = station.left + "%";
@@ -782,25 +792,34 @@
           const dx = station.labelDx || 0;
           const dy = station.labelDy || 0;
 
-          pinWrapper.innerHTML = `
-            <div class="pin-label" style="transform: translate(${dx}px, ${dy}px)">${station.name}</div>
-            <i class="fas fa-map-marker-alt pin-icon"></i>
-          `;
+          // 1. ラベル (クリック透過)
+          const labelDiv = document.createElement("div");
+          labelDiv.className = "pin-label";
+          labelDiv.style.transform = `translate(${dx}px, ${dy}px)`;
+          labelDiv.innerHTML = station.name;
 
-          // クリック時のリップルエフェクト（装飾用）
-          pinWrapper.addEventListener("click", (e) => {
-            // <a>タグのデフォルト遷移を一瞬遅らせてエフェクトを見せる場合
-            // ただしUX的には即時遷移が好ましいため、単純に装飾として追加
+          // 2. アイコンリンク (ここだけクリック有効)
+          const iconLink = document.createElement("a");
+          iconLink.href = station.url;
+          iconLink.target = "_blank";
+          iconLink.rel = "noopener noreferrer";
+          iconLink.className = "pin-link";
+          iconLink.title = `${station.name}の動画を見る（YouTube）`;
+          iconLink.innerHTML = `<i class="fas fa-map-marker-alt pin-icon"></i>`;
+
+          // クリック時のリップルエフェクト
+          iconLink.addEventListener("click", (e) => {
             const ripple = document.createElement("div");
             ripple.className = "ripple";
-            pinWrapper.appendChild(ripple);
-
-            // <a>タグなので、JSでの window.open は不要
-            // リップルを消すためのタイマーだけセット
+            iconLink.appendChild(ripple);
             setTimeout(() => {
               ripple.remove();
             }, 600);
           });
+
+          // 要素を組み立て
+          pinWrapper.appendChild(labelDiv);
+          pinWrapper.appendChild(iconLink);
 
           container.appendChild(pinWrapper);
         });
