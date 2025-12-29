@@ -4,17 +4,58 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- ▼▼▼ SEO対策エリア ▼▼▼ -->
-    <title>ふんじゃんのB級でいこうぜ！全国道の駅動画マップ</title>
+    <!-- ▼▼▼ SEO・メタデータエリア ▼▼▼ -->
+    <title>
+      ふんじゃんのB級でいこうぜ！全国道の駅動画マップ | 車中泊・グルメ情報
+    </title>
     <meta
       name="description"
-      content="全国47都道府県の「道の駅」をYouTube動画で紹介するマップサイト。車中泊や知りたい道の駅情報を掲載！！"
+      content="全国47都道府県の「道の駅」をYouTube動画で紹介するマップサイト。車中泊の可否や現地の様子など、知りたい道の駅情報を地図から直感的に検索できます！"
     />
+    <meta
+      name="keywords"
+      content="道の駅,マップ,車中泊,YouTube,ふんじゃん,B級グルメ,観光地図"
+    />
+    <link rel="canonical" href="https://funjanb.github.io/funjanb/" />
+
+    <!-- OGP (SNSシェア対策) -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="ふんじゃんのB級でいこうぜ！全国道の駅動画マップ"
+    />
+    <meta
+      property="og:description"
+      content="全国の道の駅をYouTube動画と共に地図で紹介！車中泊やグルメ情報の予習に最適です。"
+    />
+    <meta property="og:url" content="https://funjanb.github.io/funjanb/" />
+    <meta property="og:site_name" content="ふんじゃんのB級でいこうぜ！" />
     <meta
       property="og:image"
       content="https://funjanb.github.io/funjanb/img/top1.jpg"
     />
-    <!-- ▲▲▲ SEO対策エリア終了 ▲▲▲ -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- ▲▲▲ SEO・メタデータエリア終了 ▲▲▲ -->
+
+    <!-- ▼▼▼ 構造化データ (JSON-LD) Googleへの詳細情報伝達 ▼▼▼ -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ふんじゃんのB級でいこうぜ！全国道の駅動画マップ",
+        "description": "全国47都道府県の道の駅を動画で紹介するインタラクティブマップ",
+        "url": "https://funjanb.github.io/funjanb/",
+        "applicationCategory": "TravelApplication",
+        "genre": "travel",
+        "browserRequirements": "Requires JavaScript",
+        "author": {
+          "@type": "Person",
+          "name": "ふんじゃん"
+        },
+        "image": "https://funjanb.github.io/funjanb/img/top1.jpg"
+      }
+    </script>
+    <!-- ▲▲▲ 構造化データ終了 ▲▲▲ -->
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,7 +66,7 @@
     />
     <!-- Google Fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Mono:wght@700&display=swap"
       rel="stylesheet"
     />
 
@@ -44,10 +85,6 @@
         max-width: 850px;
         margin: 0 auto;
       }
-      /* スクロール位置の微調整 */
-      section {
-        scroll-margin-top: 20px;
-      }
       .top-image {
         width: 100%;
         height: auto;
@@ -63,17 +100,47 @@
         width: 100%;
         text-align: left;
       }
-      .region-header {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #fff;
-        background-color: #374151;
-        padding: 0.8rem;
+
+      /* アコーディオン・ヘッダー（地方バー） */
+      .accordion-header {
+        font-size: 1.15rem;
+        font-weight: 700;
+        background-color: #e7e7e7;
+        color: #444;
+        padding: 0.8rem 1rem;
         width: 100%;
-        text-align: center;
-        margin-top: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0.2rem;
         border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        user-select: none;
+        font-family: "Noto Sans Mono", "Courier New", Courier, monospace;
+        white-space: pre;
       }
+      .accordion-header:hover {
+        background-color: #dadada;
+      }
+      .accordion-header i {
+        transition: transform 0.3s;
+        font-size: 1.2rem;
+      }
+      .accordion-header.active i {
+        transform: rotate(180deg);
+      }
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease-out;
+        background-color: #fff;
+        border-radius: 0 0 0.5rem 0.5rem;
+      }
+      .accordion-content.open {
+        max-height: 10000px;
+      }
+
       /* 地図コンテナ */
       .map-container {
         position: relative;
@@ -90,6 +157,7 @@
         display: block;
         background-color: #fff;
       }
+
       /* ピン配置 */
       .pin-wrapper {
         position: absolute;
@@ -107,10 +175,12 @@
       }
       .pin-icon {
         color: #dc2626;
-        font-size: 1.4rem;
+        font-size: 1.2rem;
         animation: bounce 2s infinite;
         text-shadow: 0 0 3px #fff;
       }
+
+      /* 道の駅名のラベル */
       .pin-label {
         font-size: 0.7rem;
         font-weight: bold;
@@ -120,6 +190,7 @@
         color: #333;
         pointer-events: none;
       }
+
       @keyframes bounce {
         0%,
         20%,
@@ -135,95 +206,110 @@
           transform: translateY(-4px);
         }
       }
-      /* 移動・ナビゲーションボタン */
-      .nav-btn {
-        @apply bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-xs transition-all flex items-center gap-1;
-      }
-      /* 地域ジャンプカード */
-      .jump-card {
-        @apply bg-white hover:bg-yellow-50 text-gray-900 border-2 border-gray-200 rounded-xl m-1.5 shadow-sm transition-all flex flex-col items-center justify-center text-center p-3;
+
+      /* TOPへ戻るホバーボタン */
+      #backToTop {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 3.5rem;
+        height: 3.5rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         cursor: pointer;
-        width: calc(25% - 0.75rem);
-        min-width: 100px;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
       }
-      .jump-card .region-name {
-        @apply font-bold text-sm text-gray-800 mb-1 flex items-center gap-1;
+      #backToTop.show {
+        opacity: 1;
+        visibility: visible;
       }
-      .jump-card .station-count {
-        @apply text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full;
+      #backToTop:hover {
+        background-color: #fff;
+        transform: translateY(-3px);
       }
-      .jump-card:hover {
-        @apply border-yellow-400 shadow-md transform -translate-y-1;
+      #backToTop i {
+        font-size: 1.2rem;
       }
-
-      /* 待機中（メモリ済み）状態のスタイル */
-      /* 背景色やボーダーの変更は削除し、文字色のみを変更 */
-      .jump-card.pending .region-name {
-        color: #ca8a04 !important; /* 文字色を濃い黄色に固定 (text-yellow-600相当) */
-      }
-
-      /* アイコンも文字色に合わせる */
-      .jump-card.pending .region-name i {
-        color: #ca8a04 !important;
+      #backToTop span {
+        font-size: 0.6rem;
+        font-weight: bold;
       }
 
-      @media (max-width: 840px) {
+      /* スマホ表示用レスポンシブ設定 */
+      @media (max-width: 640px) {
+        .accordion-header {
+          font-size: 0.9rem;
+          padding: 0.6rem 0.2rem;
+        }
+        .main-title {
+          font-size: 1.1rem;
+        }
+        #backToTop {
+          bottom: 1.5rem;
+          right: 1.5rem;
+          width: 3rem;
+          height: 3rem;
+        }
         .pin-icon {
-          font-size: 1rem;
+          font-size: 0.8rem;
         }
         .pin-label {
           font-size: 0.5rem;
-        }
-        .jump-card {
-          width: calc(33.33% - 0.75rem);
-          @apply p-2;
-        }
-        .jump-card .region-name {
-          @apply text-xs;
         }
       }
     </style>
   </head>
   <body class="min-h-screen flex flex-col items-center">
+    <!-- ページ最上部アンカー -->
     <header class="content-width text-center pt-4" id="pageTop">
-      <img
-        src="https://funjanb.github.io/funjanb/img/top1.jpg"
-        alt="メインビジュアル"
-        class="top-image"
-      />
+      <h1>
+        <img
+          src="https://funjanb.github.io/funjanb/img/top1.jpg"
+          alt="ふんじゃんのB級でいこうぜ！全国道の駅動画マップ"
+          class="top-image"
+        />
+      </h1>
 
       <div class="mt-4">
-        <p class="font-bold text-gray-700 text-lg">
+        <h2 class="font-bold text-gray-700 text-lg">
           全国の激アツな「道の駅-休憩(車中泊)スポット」を地図から探そう！
-        </p>
+        </h2>
         <p class="text-gray-500 font-medium mt-1">
           ピンをタップしてYouTube動画をチェック。
         </p>
       </div>
 
-      <!-- 地域ナビゲーション -->
-      <div class="mt-8 px-4 w-full">
-        <!-- 装飾用の枠線を追加 -->
-        <div class="border-2 border-gray-300 rounded-xl p-4 bg-white shadow-sm">
-          <p
-            class="text-xs font-bold text-gray-400 mb-4 flex items-center justify-center gap-1"
-          >
-            全国制覇に向けて更新中！ <br />20251226 三重県追加
-          </p>
-          <!-- カードレイアウトのコンテナ -->
-          <div
-            id="regionNavContainer"
-            class="flex flex-wrap justify-center gap-1 content-width"
-          >
-            <!-- ここにJavaScriptでカードが生成されます -->
-          </div>
-        </div>
+      <!-- 更新情報エリア -->
+      <div class="mt-6 px-4 w-full">
+        <p
+          class="text-xs font-bold text-gray-400 flex items-center justify-center gap-1 text-center"
+        >
+          全国制覇に向けて順次更新中！<br />
+          最新更新：20251227 和歌山県追加/20251229 福岡 大分追加
+        </p>
       </div>
     </header>
 
-    <main class="content-width px-2 mt-8">
-      <div id="mainContent"></div>
+    <!-- メインコンテンツ -->
+    <main class="content-width px-2 mt-4" id="mainContent">
+      <!-- JavaScriptでアコーディオンが生成されます -->
     </main>
+
+    <!-- 追従型TOPボタン -->
+    <div id="backToTop" onclick="scrollToTop()" aria-label="トップに戻る">
+      <i class="fas fa-home"></i>
+      <span>TOP</span>
+    </div>
 
     <footer class="w-full bg-gray-200 text-white text-center py-10 mt-20">
       <div class="content-width">
@@ -236,7 +322,7 @@
           <img
             src="https://funjanb.github.io/funjanb/img/top1.jpg"
             class="w-32 rounded shadow"
-            alt="YouTube Logo"
+            alt="YouTubeで動画を見る"
           />
           <span>YouTubeチャンネル登録をお願いします</span>
         </a>
@@ -248,10 +334,6 @@
 
     <script>
       const baseUrl = "https://funjanb.github.io/funjanb/img/";
-
-      // 読み込み待ちのジャンプ先を管理する変数
-      let pendingTargetId = null;
-      let pendingNavButton = null;
 
       const regions = [
         // {
@@ -309,7 +391,7 @@
             { name: "大阪府", file: "kinki-osaka.jpg" },
             // { name: "兵庫県", file: "kinki-hyogo.jpg" },
             { name: "奈良県", file: "kinki-nara.jpg" },
-            // { name: "和歌山県", file: "kinki-wakayama.jpg" },
+            { name: "和歌山県", file: "kinki-wakayama.jpg" },
           ],
         },
         // {
@@ -333,112 +415,184 @@
         //     { name: "高知県", file: "shikoku-kochi.jpg" },
         //   ],
         // },
-        // {
-        //   id: "kyushu",
-        //   name: "九州・沖縄",
-        //   prefs: [
-        //     { name: "福岡県", file: "kyusyu-fukuoka.jpg" },
-        //     { name: "佐賀県", file: "kyusyu-saga.jpg" },
-        //     { name: "長崎県", file: "kyusyu-nagashima.jpg" },
-        //     { name: "熊本県", file: "kyusyu-kumamoto.jpg" },
-        //     { name: "大分県", file: "kyusyu-oita.jpg" },
-        //     { name: "宮崎県", file: "kyusyu-miyazaki.jpg" },
-        //     { name: "鹿児島県", file: "kyusyu-kagoshima.jpg" },
-        //     { name: "沖縄県", file: "kyusyu-okunawa.jpg" },
-        //   ],
-        // },
+        {
+          id: "kyushu",
+          name: "九州・沖縄",
+          prefs: [
+            { name: "福岡県", file: "kyusyu-fukuoka.jpg" },
+            // { name: "佐賀県", file: "kyusyu-saga.jpg" },
+            // { name: "長崎県", file: "kyusyu-nagashima.jpg" },
+            // { name: "熊本県", file: "kyusyu-kumamoto.jpg" },
+            { name: "大分県", file: "kyusyu-oita.jpg" },
+            // { name: "宮崎県", file: "kyusyu-miyazaki.jpg" },
+            // { name: "鹿児島県", file: "kyusyu-kagoshima.jpg" },
+            // { name: "沖縄県", file: "kyusyu-okunawa.jpg" },
+          ],
+        },
       ];
 
       const allStationData = {
-        "kinki-osaka.jpg": [
+        "kinki-mie.jpg": [
           {
-            name: "能勢（くりの郷）",
-            address: "大阪府豊能郡能勢町平野535",
-            url: "https://www.youtube.com/watch?v=8qm7EXimhcM",
-            top: 21,
-            left: 61,
+            name: "飯高駅",
+            address: "三重県松阪市飯高町宮前177",
+            url: "https://www.youtube.com/watch?v=CmH0R1-PIjw",
+            top: 55,
+            left: 49.0,
+            labelDx: -10,
+            labelDy: -1,
+          },
+          {
+            name: "菰野",
+            address: "三重県三重郡菰野町大字菰野2256",
+            url: "https://www.youtube.com/watch?v=HHbl_u4uTOY",
+            top: 15.0,
+            left: 59,
             labelDx: 0,
+            labelDy: -2,
+          },
+          {
+            name: "紀宝町<br>ウミガメ公園",
+            address: "三重県南牟婁郡紀宝町井田568-7",
+            url: "https://www.youtube.com/watch?v=QW3bFWf7ZUc",
+            top: 98.0,
+            left: 33.5,
+            labelDx: 5,
+            labelDy: 0,
+          },
+          {
+            name: "パーク七里御浜",
+            address: "三重県南牟婁郡御浜町大字阿田和4926-5",
+            url: "https://www.youtube.com/watch?v=Mm-JJtN7odg",
+            top: 94,
+            left: 36.0,
+            labelDx: 30,
+            labelDy: 0,
+          },
+          {
+            name: "海山",
+            address: "三重県北牟婁郡紀北町海山区相賀1439-3",
+            url: "https://www.youtube.com/watch?v=RkOWPGdZtBo",
+            top: 75.5,
+            left: 44.5,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "奥伊勢木つつ木館",
+            address: "三重県度会郡大紀町滝原870-37",
+            url: "https://www.youtube.com/watch?v=cZ2W3pvowCQ",
+            top: 59.5,
+            left: 52.5,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "熊野<br>きのくに",
+            address: "三重県熊野市飛鳥町大又109-21",
+            url: "https://www.youtube.com/watch?v=81BkPlRjIFo",
+            top: 83,
+            left: 39.5,
+            labelDx: 10,
+            labelDy: 0,
+          },
+          {
+            name: "茶倉駅",
+            address: "三重県松阪市飯南町粥見452-1",
+            url: "https://www.youtube.com/watch?v=wPWc4X263xg",
+            top: 49.0,
+            left: 53.5,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "奥伊勢おおだい",
+            address: "三重県多気郡大台町大字佐原663-1",
+            url: "https://www.youtube.com/watch?v=b48-07xMkDY",
+            top: 54.5,
+            left: 52.5,
+            labelDx: 20,
+            labelDy: 0,
+          },
+          {
+            name: "美杉",
+            address: "三重県津市美杉町上多気267",
+            url: "https://www.youtube.com/watch?v=P38-HM7BKvA",
+            top: 47.5,
+            left: 46.5,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "関宿",
+            address: "三重県亀山市関町新所674-8",
+            url: "https://www.youtube.com/watch?v=Q1wuXA_o5YU",
+            top: 28.5,
+            left: 56.5,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "紀伊長島マンボウ",
+            address: "三重県北牟婁郡紀北町東長島2410-73",
+            url: "https://www.youtube.com/watch?v=dHeIsfOTZyk",
+            top: 69.5,
+            left: 48.5,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "あやま",
+            address: "三重県伊賀市川合3370-29",
+            url: "https://www.youtube.com/watch?v=QsvWzC8JKw8",
+            top: 28.5,
+            left: 41.0,
+            labelDx: -10,
+            labelDy: 0,
+          },
+          {
+            name: "いが",
+            address: "三重県伊賀市柘植町6187-1",
+            url: "https://www.youtube.com/watch?v=aWq-94_qej0",
+            top: 28,
+            left: 44,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "津かわげ",
+            address: "三重県津市河芸町三行255-4",
+            url: "https://www.youtube.com/watch?v=k3A4o_srPiY",
+            top: 31,
+            left: 59.5,
+            labelDx: 10,
             labelDy: -5,
           },
           {
-            name: "しらとりの郷<br>・羽曳野",
-            address: "大阪府羽曳野市埴生野975-3",
-            url: "https://www.youtube.com/watch?v=DAVgms1Z8Hc",
-            top: 74,
-            left: 66,
-            labelDx: 0,
-            labelDy: -8,
-          },
-          {
-            name: "近つ飛鳥<br>の里太子",
-            address: "大阪府南河内郡太子町大字山田2254-3",
-            url: "https://www.youtube.com/watch?v=uKHyF_wxLAg",
-            top: 78,
-            left: 71,
-            labelDx: 23,
-            labelDy: 8,
-          },
-          {
-            name: "かなん",
-            address: "大阪府南河内郡河南町大字神山523-1",
-            url: "https://www.youtube.com/watch?v=S6F7nlmAOfY",
-            top: 82,
-            left: 68,
-            labelDx: 0,
+            name: "熊野・花の窟",
+            address: "三重県熊野市有馬町137",
+            url: "https://www.youtube.com/watch?v=Ap4HpQLay-0",
+            top: 88.5,
+            left: 38.5,
+            labelDx: 20,
             labelDy: 0,
           },
           {
-            name: "ちはやあかさか",
-            address: "大阪府南河内郡千早赤阪村二河原辺7",
-            url: "https://www.youtube.com/watch?v=zWmhIAqRoKM",
-            top: 86,
-            left: 67,
-            labelDx: 4,
-            labelDy: 35,
-          },
-          {
-            name: "いずみ<br>山愛の里",
-            address: "大阪府和泉市仏並町398-1",
-            url: "https://www.youtube.com/watch?v=pkdyeFD5OBE",
-            top: 82,
-            left: 50.5,
-            labelDx: -4,
+            name: "熊野・板屋<br>九郎兵衛の里",
+            address: "三重県熊野市紀和町板屋82",
+            url: "https://www.youtube.com/watch?v=FM6WrGCLNs8",
+            top: 91,
+            left: 26.5,
+            labelDx: -20,
             labelDy: 0,
           },
           {
-            name: "奥河内<br>くろまろ<br>の郷",
-            address: "大阪府河内長野市高向1218-1",
-            url: "https://www.youtube.com/watch?v=FLPI4tDX4-w",
-            top: 84.5,
-            left: 60,
-            labelDx: 0,
-            labelDy: 0,
-          },
-          {
-            name: "愛彩<br>ランド",
-            address: "大阪府岸和田市岸の丘町3-6-18",
-            url: "https://www.youtube.com/watch?v=ePS6X1jwCh4",
-            top: 84,
-            left: 45.5,
-            labelDx: -15,
-            labelDy: 5,
-          },
-          {
-            name: "みさき",
-            address: "大阪府泉南郡岬町淡輪5654-3",
-            url: "https://www.youtube.com/watch?v=K8a8Kfsqrak",
-            top: 90,
-            left: 17,
-            labelDx: 15,
-            labelDy: 1,
-          },
-          {
-            name: "とっと<br>パーク小島",
-            address: "大阪府泉南郡岬町多奈川小島455-1",
-            url: "https://www.youtube.com/watch?v=mbChGyOsCwE",
-            top: 90,
-            left: 10,
-            labelDx: -8,
+            name: "小舟キャンプ場",
+            address: "三重県熊野市紀和町小船",
+            url: "https://www.youtube.com/watch?v=SK6L5xMcA6k",
+            top: 95.0,
+            left: 25.5,
+            labelDx: -20,
             labelDy: 0,
           },
         ],
@@ -898,172 +1052,709 @@
             labelDy: 0,
           },
         ],
+        "kinki-osaka.jpg": [
+          {
+            name: "能勢（くりの郷）",
+            address: "大阪府豊能郡能勢町平野535",
+            url: "https://www.youtube.com/watch?v=8qm7EXimhcM",
+            top: 21,
+            left: 61,
+            labelDx: 0,
+            labelDy: -5,
+          },
+          {
+            name: "しらとりの郷<br>・羽曳野",
+            address: "大阪府羽曳野市埴生野975-3",
+            url: "https://www.youtube.com/watch?v=DAVgms1Z8Hc",
+            top: 74,
+            left: 66,
+            labelDx: 0,
+            labelDy: -8,
+          },
+          {
+            name: "近つ飛鳥<br>の里太子",
+            address: "大阪府南河内郡太子町大字山田2254-3",
+            url: "https://www.youtube.com/watch?v=uKHyF_wxLAg",
+            top: 78,
+            left: 71,
+            labelDx: 23,
+            labelDy: 8,
+          },
+          {
+            name: "かなん",
+            address: "大阪府南河内郡河南町大字神山523-1",
+            url: "https://www.youtube.com/watch?v=S6F7nlmAOfY",
+            top: 82,
+            left: 68,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "ちはやあかさか",
+            address: "大阪府南河内郡千早赤阪村二河原辺7",
+            url: "https://www.youtube.com/watch?v=zWmhIAqRoKM",
+            top: 86,
+            left: 67,
+            labelDx: 4,
+            labelDy: 35,
+          },
+          {
+            name: "いずみ<br>山愛の里",
+            address: "大阪府和泉市仏並町398-1",
+            url: "https://www.youtube.com/watch?v=pkdyeFD5OBE",
+            top: 82,
+            left: 50.5,
+            labelDx: -4,
+            labelDy: 0,
+          },
+          {
+            name: "奥河内<br>くろまろ<br>の郷",
+            address: "大阪府河内長野市高向1218-1",
+            url: "https://www.youtube.com/watch?v=FLPI4tDX4-w",
+            top: 84.5,
+            left: 60,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "愛彩<br>ランド",
+            address: "大阪府岸和田市岸の丘町3-6-18",
+            url: "https://www.youtube.com/watch?v=ePS6X1jwCh4",
+            top: 84,
+            left: 45.5,
+            labelDx: -15,
+            labelDy: 5,
+          },
+          {
+            name: "みさき",
+            address: "大阪府泉南郡岬町淡輪5654-3",
+            url: "https://www.youtube.com/watch?v=K8a8Kfsqrak",
+            top: 90,
+            left: 17,
+            labelDx: 15,
+            labelDy: 1,
+          },
+          {
+            name: "とっと<br>パーク小島",
+            address: "大阪府泉南郡岬町多奈川小島455-1",
+            url: "https://www.youtube.com/watch?v=mbChGyOsCwE",
+            top: 90,
+            left: 10,
+            labelDx: -8,
+            labelDy: 0,
+          },
+        ],
+        "kinki-wakayama.jpg": [
+          {
+            name: "しみず",
+            address: "和歌山県有田郡有田川町清水607",
+            url: "https://www.youtube.com/watch?v=r0Fvj3tKzp0",
+            top: 36.2,
+            left: 41.5,
+            labelDx: 0,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "イノブータンランド<br>・すさみ",
+            address: "和歌山県西牟婁郡すさみ町見老津地内",
+            url: "https://www.youtube.com/watch?v=w-933TE-YhQ",
+            top: 90,
+            left: 50.2,
+            labelDx: 25,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "志原海岸",
+            address: "和歌山県西牟婁郡白浜町日置2039-73",
+            url: "https://www.youtube.com/watch?v=2vV1yHhCZTQ",
+            top: 85.8,
+            left: 40.5,
+            labelDx: 0,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "しらまの里",
+            address: "和歌山県有田郡有田川町宇井苔213-1",
+            url: "https://www.youtube.com/watch?v=_6KP7GFoXV4",
+            top: 39.8,
+            left: 34.0,
+            labelDx: 0,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "みなべうめ振興館",
+            address: "和歌山県日高郡 みなべ町谷口538-1",
+            url: "https://www.youtube.com/watch?v=7jIzoD_tfGg",
+            top: 64.5,
+            left: 31.0,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "瀞峡街道 熊野川",
+            address: "和歌山県新宮市熊野川町田長47",
+            url: "https://www.youtube.com/watch?v=YG7_U5CW6e4",
+            top: 68.5,
+            left: 81.5,
+            labelDx: 0,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "紀の川万葉の里",
+            address: "和歌山県伊都郡かつらぎ町窪487-2",
+            url: "https://www.youtube.com/watch?v=atHsmdo6tN4",
+            top: 20,
+            left: 44.4,
+            labelDx: 0,
+            labelDy: -2,
+            label: 0,
+          },
+          {
+            name: "奥熊野古道ほんぐう",
+            address: "和歌山県田辺市本宮町伏拝904-4",
+            url: "https://www.youtube.com/watch?v=dDkH-Bvn5tE",
+            top: 57.2,
+            left: 69.5,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "おくとろ",
+            address: "和歌山県東牟婁郡北山村下尾井335",
+            url: "https://www.youtube.com/watch?v=Hejaa2rWeC4",
+            top: 48,
+            left: 84.5,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "明恵ふるさと館",
+            address: "和バリ山県有田郡有田川町大字金屋322-1",
+            url: "https://www.youtube.com/watch?v=eGmDFQR-gQc",
+            top: 38,
+            left: 29.2,
+            labelDx: -35,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "根来さくらの里",
+            address: "和歌山県岩出市押川37-1",
+            url: "https://www.youtube.com/watch?v=7BgFCGxaCHI",
+            top: 12.2,
+            left: 28.8,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "あらぎの里",
+            address: "和歌山県有田郡有田川町三田664-1",
+            url: "https://www.youtube.com/watch?v=dU06BjXD0ZU",
+            top: 34,
+            left: 37.5,
+            labelDx: 0,
+            labelDy: -10,
+            label: 0,
+          },
+          {
+            name: "白崎海洋公園",
+            address: "和歌山県日高郡由良町大字大引960-1",
+            url: "https://www.youtube.com/watch?v=yhsYnsblRnY",
+            top: 45.8,
+            left: 11.5,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "椿はなの湯",
+            address: "和歌山県西牟婁郡白浜町椿1058-1",
+            url: "https://www.youtube.com/watch?v=MyeNa6BbqV4",
+            top: 80.5,
+            left: 37.8,
+            labelDx: 0,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "なち",
+            address: "和歌山県東牟婁郡那智勝浦町浜ノ宮361-2",
+            url: "https://www.youtube.com/watch?v=axQTp9WIQW8",
+            top: 79,
+            left: 85,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "くしもと橋杭岩",
+            address: "和歌山県東牟婁郡串本町鬮野川1549-8",
+            url: "https://www.youtube.com/watch?v=wH7UT5ft0Kc",
+            top: 93.2,
+            left: 72.8,
+            labelDx: 0,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "柿の郷くどやま",
+            address: "和歌山県伊都郡九度山町入郷5-5",
+            url: "https://www.youtube.com/watch?v=axrfxRHDFjM",
+            top: 15,
+            left: 50.5,
+            labelDx: 30,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "虫喰岩",
+            address: "和歌山県東牟婁郡古座川町池野川705-1",
+            url: "https://www.youtube.com/watch?v=Qy7iM2EyK5c",
+            top: 88.2,
+            left: 73.5,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "すさみ",
+            address: "和歌山県西牟婁郡すさみ町江住808-1",
+            url: "https://www.youtube.com/watch?v=nhKyinmYK6k",
+            top: 92.5,
+            left: 56.5,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "かつらぎ西",
+            address: "和歌山県伊都郡かつらぎ町笠田東1271-28",
+            url: "https://www.youtube.com/watch?v=SgmnG72CByQ",
+            top: 12.8,
+            left: 43.8,
+            labelDx: 10,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "たいじ",
+            address: "和歌山県東牟婁郡太地町大字森浦143-1",
+            url: "https://www.youtube.com/watch?v=3pgL4Ubhw30",
+            top: 84,
+            left: 86,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+          {
+            name: "青洲の里",
+            address: "和歌山県紀の川市西野山473",
+            url: "https://www.youtube.com/watch?v=iKIA0pgbR_0",
+            top: 13.8,
+            left: 39.5,
+            labelDx: -15,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "くしがきの里",
+            address: "和歌山県伊都郡かつらぎ町大字滝53-1",
+            url: "https://www.youtube.com/watch?v=bcY7e2Vu8dE",
+            top: 8,
+            left: 42.3,
+            labelDx: 0,
+            labelDy: -2,
+            label: 0,
+          },
+          {
+            name: "ねごろ歴史の丘",
+            address: "和歌山県岩出市根来2020番地の１",
+            url: "https://www.youtube.com/watch?v=7iqx-a44GHA",
+            top: 15.8,
+            left: 29,
+            labelDx: 0,
+            labelDy: 0,
+            label: 0,
+          },
+          {
+            name: "四季の郷公園",
+            address: "和歌山県和歌山市明王寺85番地",
+            url: "https://www.youtube.com/watch?v=uOs0Zya6tgQ",
+            top: 21,
+            left: 23.0,
+            labelDx: 0,
+            labelDy: -5,
+            label: 0,
+          },
+        ],
+        "kyusyu-fukuoka.jpg": [
+          {
+            name: "原鶴",
+            address: "福岡県朝倉市杷木久喜宮1663-1",
+            url: "https://www.youtube.com/watch?v=F8azPqNjLYw",
+            top: 64.6,
+            left: 62.3,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "小石原",
+            address: "福岡県朝倉郡東峰村大字小石原941-3",
+            url: "https://www.youtube.com/watch?v=2vTLvAKSbuU",
+            top: 53.8,
+            left: 67,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "うきは",
+            address: "福岡県うきは市浮羽町山北729-2",
+            url: "https://www.youtube.com/watch?v=PLr5fHwjVO4",
+            top: 67,
+            left: 66.3,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "たちばな",
+            address: "福岡県八女市立花町下辺春315番地1",
+            url: "https://www.youtube.com/watch?v=ooiIrA9YYtA",
+            top: 81.3,
+            left: 49.9,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "うすい",
+            address: "福岡県嘉麻市上臼井328-1",
+            url: "https://www.youtube.com/watch?v=qknOswh8soE",
+            top: 42,
+            left: 57.4,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "歓遊舎ひこさん",
+            address: "福岡県田川郡添田町大字野田1113-1",
+            url: "https://www.youtube.com/watch?v=YDqCuTX4CVA",
+            top: 45.9,
+            left: 57.4,
+            labelDx: 0,
+            labelDy: 5,
+          },
+          {
+            name: "くるめ",
+            address: "福岡県久留米市善導寺町木塚221番地33",
+            url: "https://www.youtube.com/watch?v=p6vqrxrVfVk",
+            top: 68.4,
+            left: 47.8,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "香春",
+            address: "福岡県田川郡香春町大字鏡山1870-1",
+            url: "https://www.youtube.com/watch?v=N915vEYtbH8",
+            top: 31.6,
+            left: 68.1,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "おおとう桜街道",
+            address: "福岡県田川郡大任町大字今任原1339",
+            url: "https://www.youtube.com/watch?v=mWHKIgeQsR0",
+            top: 38.4,
+            left: 68.1,
+            labelDx: 20,
+            labelDy: 0,
+          },
+          {
+            name: "いとだ",
+            address: "福岡県田川郡糸田町162-4",
+            url: "https://www.youtube.com/watch?v=FMkI9sy9z8g",
+            top: 35.4,
+            left: 61.3,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "筑前みなみの里",
+            address: "福岡県朝倉郡筑前町三並866番地",
+            url: "https://www.youtube.com/watch?v=oNe7OU_l36I",
+            top: 52.4,
+            left: 48.7,
+            labelDx: 0,
+            labelDy: 0,
+          },
+        ],
+        "kyusyu-oita.jpg": [
+          {
+            name: "原尻の滝",
+            address: "大分県豊後大野市緒方町原尻936-1",
+            url: "https://www.youtube.com/watch?v=BIv0oOBSBqA",
+            top: 77.7,
+            left: 49.4,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "宇目",
+            address: "大分県佐伯市宇目大字南田原2513-5",
+            url: "https://www.youtube.com/watch?v=B4u5Qarsi94",
+            top: 88.7,
+            left: 63,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "竹田",
+            address: "大分県竹田市米納６６３－１",
+            url: "https://www.youtube.com/watch?v=CYbNcIW43rk",
+            top: 72.3,
+            left: 39.5,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "あさじ",
+            address: "大分県豊後大野市朝地町板井迫1018-1",
+            url: "https://www.youtube.com/watch?v=MvRKSgyYJuw",
+            top: 70.3,
+            left: 48.7,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "せせらぎ郷かみつえ",
+            address: "大分県日田市上津江町川原3848-1",
+            url: "https://www.youtube.com/watch?v=F_iuV1dl2co",
+            top: 60.5,
+            left: 12.3,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "やよい",
+            address: "大分県佐伯市弥生大字上小倉898-1",
+            url: "https://www.youtube.com/watch?v=Uz0GJH30FBo",
+            top: 75.6,
+            left: 82.8,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "鯛生金山",
+            address: "大分県日田市中津江村合瀬3750",
+            url: "https://www.youtube.com/watch?v=kKML4ds126o",
+            top: 58.5,
+            left: 5,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "きよかわ",
+            address: "大分県豊後大野市清川町砂田1574番地1",
+            url: "https://www.youtube.com/watch?v=dkkN4RkvOGI",
+            top: 74.4,
+            left: 56.4,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "ゆふいん",
+            address: "大分県豊後大野市清川町砂田1574番地1",
+            url: "https://www.youtube.com/watch?v=alAD5tuyrHQ",
+            top: 48.3,
+            left: 39.7,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "みえ",
+            address: "大分県豊後大野市三重町宮野2791-１",
+            url: "https://www.youtube.com/watch?v=Ojjc84R_q-Q",
+            top: 67.3,
+            left: 62.2,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "水辺の郷おおやま",
+            address: "大分県日田市大山町西大山4106",
+            url: "https://www.youtube.com/watch?v=vAmcGE1FDFA",
+            top: 48.9,
+            left: 12.7,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "かまえ",
+            address: "大分県佐伯市蒲江大字蒲江浦5104番地16",
+            url: "https://www.youtube.com/watch?v=tv7ZO7-g3ks",
+            top: 86.4,
+            left: 86.9,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "ながゆ温泉",
+            address: "大分県竹田市直入町大字長湯8043番地1",
+            url: "https://www.youtube.com/watch?v=hmAq5q0EIn8",
+            top: 62.4,
+            left: 44.4,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "おおの",
+            address: "大分県豊後大野市大野町田中43番地10",
+            url: "https://www.youtube.com/watch?v=gHG3d52eL04",
+            top: 65.6,
+            left: 55.3,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "童話の里くす",
+            address: "大分県玖珠郡玖珠町大字帆足2121",
+            url: "https://www.youtube.com/watch?v=PJQzlwasAYc",
+            top: 42.9,
+            left: 28.4,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "すごう",
+            address: "大分県竹田市大字菅生989番地1",
+            url: "https://www.youtube.com/watch?v=rlvx2dXCNho",
+            top: 79.7,
+            left: 37.2,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "慈恩の滝 くす",
+            address: "大分県玖珠群玖珠町大字山浦618番地24",
+            url: "https://www.youtube.com/watch?v=cZvIlN8t1jo",
+            top: 47.6,
+            left: 23,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "のつはる",
+            address: "大分県大分市大字下原1717－1",
+            url: "https://www.youtube.com/watch?v=jM57ZYjtrQU",
+            top: 56.8,
+            left: 51.3,
+            labelDx: 0,
+            labelDy: 0,
+          },
+          {
+            name: "たのうらら",
+            address: "大分県大分市大字神崎字梶原1228番-9",
+            url: "https://www.youtube.com/watch?v=-I9BO97aJPU",
+            top: 46.9,
+            left: 57.8,
+            labelDx: 0,
+            labelDy: 0,
+          },
+        ],
       };
 
-      async function init() {
-        // 地域ナビゲーションを生成
-        generateRegionNav();
-        setupScrollCancel(); // スクロールキャンセルイベントのセットアップ
-
-        const main = document.getElementById("mainContent");
-
-        for (const [rIdx, region] of regions.entries()) {
-          const regionSec = document.createElement("section");
-          regionSec.id = region.id;
-          regionSec.innerHTML = `<h2 class="region-header">${region.name}地方</h2>`;
-
-          for (const [pIdx, pref] of region.prefs.entries()) {
-            const prefSec = document.createElement("div");
-            prefSec.className = "flex flex-col items-center my-10";
-
-            const h2 = document.createElement("h2");
-            h2.className = "main-title";
-            h2.innerText = `${pref.name}の「道の駅」`;
-            prefSec.appendChild(h2);
-
-            const mapCont = document.createElement("div");
-            mapCont.className = "map-container";
-            const img = document.createElement("img");
-            img.src = baseUrl + pref.file;
-            img.alt = `${pref.name}地図`;
-            img.className = "map-image";
-
-            await new Promise((resolve) => {
-              img.onload = resolve;
-              img.onerror = resolve;
-            });
-            mapCont.appendChild(img);
-
-            const stations = allStationData[pref.file] || [];
-            stations.forEach((st) => {
-              mapCont.appendChild(createPin(st));
-            });
-            prefSec.appendChild(mapCont);
-
-            const isLastOfAll =
-              rIdx === regions.length - 1 && pIdx === region.prefs.length - 1;
-            prefSec.appendChild(createNavButtons(rIdx, isLastOfAll));
-
-            regionSec.appendChild(prefSec);
-          }
-          main.appendChild(regionSec);
-
-          // ★追加: セクションがDOMに追加された直後に、待機中の移動先と一致するかチェック
-          if (pendingTargetId === region.id) {
-            // 少し待ってから実行（ブラウザの描画安定化のため）
-            setTimeout(() => {
-              const target = document.getElementById(region.id);
-              if (target) {
-                target.scrollIntoView({ behavior: "smooth" });
-                clearPendingState(); // 移動したのでメモリをリセット
-              }
-            }, 100);
-          }
+      function getFormattedHeaderText(name, count) {
+        const regionLabel = name + "地方";
+        const maxLen = 7;
+        const currentLen = regionLabel.length;
+        let spacePadding = "";
+        for (let i = 0; i < maxLen - currentLen; i++) {
+          spacePadding += "　";
         }
+        const countStr = count.toString().padStart(3, " ");
+        return `${regionLabel}${spacePadding} ( ${countStr}駅)　　`;
       }
 
-      // ユーザーの操作でメモリ状態をキャンセルする設定
-      function setupScrollCancel() {
-        const cancelEvents = ["wheel", "touchmove", "mousedown", "keydown"];
-        const cancelHandler = () => {
-          if (pendingTargetId) {
-            clearPendingState();
-          }
-        };
-
-        cancelEvents.forEach((evt) => {
-          window.addEventListener(evt, cancelHandler, { passive: true });
-        });
+      function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
-      // 地域ナビゲーションの動的生成（カードタイプへの変更）
-      function generateRegionNav() {
-        const container = document.getElementById("regionNavContainer");
-        container.innerHTML = "";
+      window.addEventListener("scroll", () => {
+        const btn = document.getElementById("backToTop");
+        if (window.scrollY > 300) {
+          btn.classList.add("show");
+        } else {
+          btn.classList.remove("show");
+        }
+      });
 
-        regions.forEach((region) => {
+      async function init() {
+        const main = document.getElementById("mainContent");
+        for (const region of regions) {
           let stationCount = 0;
           region.prefs.forEach((pref) => {
             if (allStationData[pref.file]) {
               stationCount += allStationData[pref.file].length;
             }
           });
-
-          // リンクをカードとして生成
-          const link = document.createElement("a");
-          link.href = `#${region.id}`;
-          link.className = "jump-card";
-
-          link.innerHTML = `
-            <div class="region-name">${region.name} <i class="fas fa-chevron-down text-[10px] text-gray-400"></i></div>
-            <div class="station-count">(${stationCount}駅)</div>
+          const regionWrapper = document.createElement("div");
+          regionWrapper.className = "mb-1";
+          const header = document.createElement("div");
+          header.className = "accordion-header";
+          header.setAttribute("role", "button");
+          header.setAttribute("aria-expanded", "false");
+          const headerText = getFormattedHeaderText(region.name, stationCount);
+          header.innerHTML = `
+            <span>${headerText}</span>
+            <i class="fas fa-chevron-down"></i>
           `;
-
-          // ★修正: クリックイベントをハンドリングしてメモリ制御
-          link.onclick = (e) => {
-            e.preventDefault(); // デフォルトの移動をキャンセルしJSで制御
-
-            // 既に他のメモリがあれば消す
-            if (pendingTargetId && pendingTargetId !== region.id) {
-              clearPendingState();
-            }
-
-            // 新しいターゲットをメモリする（色を変える）
-            pendingTargetId = region.id;
-            pendingNavButton = link;
-            link.classList.add("pending");
-
-            // ターゲットが既に存在するか確認
-            const target = document.getElementById(region.id);
-
-            if (target) {
-              // 既に存在する場合は移動を開始
-              target.scrollIntoView({ behavior: "smooth" });
-
-              // 移動開始したのでメモリは解除するが、
-              // 「移動するまで濃い黄色」という要望のため、少し遅延させて解除する
-              // （スムーズスクロール中は本来イベントを取るべきだが、簡易的に遅延で対応）
+          const content = document.createElement("div");
+          content.className = "accordion-content px-2 pb-2";
+          header.onclick = () => {
+            const isOpen = header.classList.toggle("active");
+            header.setAttribute("aria-expanded", isOpen);
+            content.classList.toggle("open");
+            if (isOpen) {
               setTimeout(() => {
-                clearPendingState();
-              }, 1000);
+                header.scrollIntoView({ behavior: "smooth", block: "start" });
+              }, 300);
             }
-            // 存在しない場合は、そのままpending状態で待機（init関数内で処理される）
           };
-
-          container.appendChild(link);
-        });
-      }
-
-      // 保留状態をクリアする関数
-      function clearPendingState() {
-        if (pendingNavButton) {
-          pendingNavButton.classList.remove("pending");
+          for (const pref of region.prefs) {
+            const prefSec = document.createElement("section");
+            prefSec.className = "flex flex-col items-center my-4";
+            const h2 = document.createElement("h3");
+            h2.className = "main-title";
+            h2.innerText = `${pref.name}の「道の駅」`;
+            prefSec.appendChild(h2);
+            const mapCont = document.createElement("div");
+            mapCont.className = "map-container";
+            const img = document.createElement("img");
+            img.src = baseUrl + pref.file;
+            img.alt = `${pref.name}の道の駅 所在地マップ`;
+            img.className = "map-image";
+            img.loading = "lazy";
+            mapCont.appendChild(img);
+            const stations = allStationData[pref.file] || [];
+            stations.forEach((st) => {
+              mapCont.appendChild(createPin(st));
+            });
+            prefSec.appendChild(mapCont);
+            content.appendChild(prefSec);
+          }
+          regionWrapper.appendChild(header);
+          regionWrapper.appendChild(content);
+          main.appendChild(regionWrapper);
         }
-        pendingTargetId = null;
-        pendingNavButton = null;
-      }
-
-      // 地図下の移動ボタン生成
-      function createNavButtons(rIdx, isLastOfAll) {
-        const nav = document.createElement("div");
-        nav.className = "flex justify-between w-full mt-2 px-1";
-
-        const nextRegion = regions[rIdx + 1];
-
-        const leftDiv = document.createElement("div");
-        leftDiv.innerHTML = `<a href="#pageTop" class="nav-btn"><i class="fas fa-home"></i> TOPへ</a>`;
-        nav.appendChild(leftDiv);
-
-        const rightDiv = document.createElement("div");
-        rightDiv.className = "flex gap-2";
-
-        if (nextRegion) {
-          rightDiv.innerHTML += `<a href="#${nextRegion.id}" class="nav-btn">次の地方へ <i class="fas fa-chevron-down"></i></a>`;
-        }
-
-        nav.appendChild(rightDiv);
-
-        return nav;
       }
 
       function createPin(st) {
@@ -1071,25 +1762,23 @@
         wrapper.className = "pin-wrapper";
         wrapper.style.top = st.top + "%";
         wrapper.style.left = st.left + "%";
-
         const label = document.createElement("div");
         label.className = "pin-label";
         const dx = st.labelDx || 0;
         const dy = st.labelDy || 0;
         label.style.transform = `translate(${dx}px, ${dy}px)`;
         label.innerHTML = st.name;
-
         const link = document.createElement("a");
         link.href = st.url;
         link.target = "_blank";
+        link.rel = "noopener";
+        link.title = `${st.name.replace("<br>", "")}の動画を見る`;
         link.className = "pin-link";
         link.innerHTML = `<i class="fas fa-map-marker-alt pin-icon"></i>`;
-
         wrapper.appendChild(label);
         wrapper.appendChild(link);
         return wrapper;
       }
-
       window.onload = init;
     </script>
   </body>
