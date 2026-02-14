@@ -71,7 +71,7 @@
     />
     <!-- Google Fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap"
       rel="stylesheet"
     />
 
@@ -142,9 +142,10 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        /* pointer-events: none; ポップアップ表示のために変更 */
+        pointer-events: none;
       }
       .pin-link {
+        pointer-events: auto;
         cursor: pointer;
         display: block;
       }
@@ -177,79 +178,6 @@
         pointer-events: none;
       }
 
-      /* 新しい駅詳細ポップアップ用スタイル */
-      #stationModal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        z-index: 10000;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-      .modal-content {
-        background: white;
-        border-radius: 24px;
-        width: 100%;
-        max-width: 380px;
-        padding: 32px 24px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        text-align: left;
-        position: relative;
-      }
-      .modal-tag {
-        color: #3b82f6;
-        font-weight: 900;
-        font-size: 12px;
-        letter-spacing: 0.1em;
-        margin-bottom: 8px;
-      }
-      .modal-title {
-        font-size: 22px;
-        font-weight: 900;
-        color: #1a1a1a;
-        margin-bottom: 12px;
-        line-height: 1.3;
-      }
-      .modal-address {
-        display: flex;
-        align-items: flex-start;
-        gap: 6px;
-        color: #64748b;
-        font-size: 14px;
-        margin-bottom: 32px;
-      }
-      .btn-youtube {
-        background-color: #e32b2b;
-        color: white;
-        width: 100%;
-        padding: 16px;
-        border-radius: 50px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-size: 16px;
-        margin-bottom: 12px;
-        transition: transform 0.1s;
-      }
-      .btn-youtube:active {
-        transform: scale(0.98);
-      }
-      .btn-close {
-        background-color: #a0aab8;
-        color: white;
-        width: 100%;
-        padding: 16px;
-        border-radius: 50px;
-        font-weight: bold;
-        text-align: center;
-        font-size: 16px;
-        cursor: pointer;
-      }
-
       .nav-btn {
         @apply bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-xs transition-all flex items-center gap-1;
       }
@@ -274,7 +202,7 @@
 
       /* 読み込み中ポップアップ用スタイル */
       #loadingOverlay {
-        display: none;
+        display: none; /* 初期状態は非表示 */
         position: fixed;
         top: 0;
         left: 0;
@@ -322,23 +250,6 @@
       <p class="text-xs text-gray-400 mt-1">動画マップを準備しています</p>
     </div>
 
-    <!-- 駅詳細ポップアップ（改修箇所） -->
-    <div id="stationModal">
-      <div class="modal-content">
-        <div class="modal-tag">ROADSIDE STATION</div>
-        <div id="modalTitle" class="modal-title">道の駅 名称</div>
-        <div class="modal-address">
-          <i class="fas fa-map-marker-alt text-red-500 mt-1"></i>
-          <span id="modalAddress">住所がここに入ります</span>
-        </div>
-        <a id="modalYoutubeLink" href="#" target="_blank" class="btn-youtube">
-          <i class="fab fa-youtube text-xl"></i>
-          動画を見る
-        </a>
-        <div class="btn-close" onclick="closeModal()">閉じる</div>
-      </div>
-    </div>
-
     <header class="content-width text-center pt-4" id="pageTop">
       <img
         src="https://funjanb.github.io/funjanb/img/top1.jpg"
@@ -351,7 +262,7 @@
           全国の激アツな「道の駅-休憩(車中泊)スポット」を地図から探そう！
         </h1>
         <p class="text-gray-500 font-medium mt-1">
-          ピンをタップして詳細をチェック。
+          ピンをタップしてYouTube動画をチェック。
         </p>
       </div>
 
@@ -407,49 +318,43 @@
       let pendingNavButton = null;
 
       const regions = [
-        // {
-        //   id: "hokkaido",
-        //   name: "北海道",
-        //   prefs: [{ name: "北海道", file: "hokaido-hokaido.jpg" }],
-        // },
-        // {
-        //   id: "tohoku",
-        //   name: "東北",
-        //   prefs: [
+        // { id: "hokkaido", name: "北海道", prefs: [
+        //     { name: "北海道", file: "hokaido-hokaido.jpg" },
+        // ] },
+        // { id: "tohoku", name: "東北", prefs: [
         //     { name: "青森県", file: "tohoku-aomori.jpg" },
         //     { name: "岩手県", file: "tohoku-iwate.jpg" },
         //     { name: "宮城県", file: "tohoku-miyagi.jpg" },
         //     { name: "秋田県", file: "tohoku-akita.jpg" },
         //     { name: "山形県", file: "tohoku-yamagata.jpg" },
         //     { name: "福島県", file: "tohoku-fukusima.jpg" },
-        //   ],
-        // },
+        // ]},
         {
           id: "kanto",
           name: "関東",
           prefs: [
-            // { name: "茨城県", file: "kanto-ibaraki.jpg" },
+            //     { name: "茨城県", file: "kanto-ibaraki.jpg" },
             { name: "栃木県", file: "kanto-tochigi.jpg" },
-            // { name: "群馬県", file: "kanto-gunma.jpg" },
-            // { name: "埼玉県", file: "kanto-saitama.jpg" },
-            // { name: "千葉県", file: "kanto-chiba.jpg" },
-            // { name: "東京都", file: "kanto-tokyo.jpg" },
-            // { name: "神奈川県", file: "kanto-kanagawa.jpg" },
+            //     { name: "群馬県", file: "kanto-gunma.jpg" },
+            //     { name: "埼玉県", file: "kanto-saitama.jpg" },
+            //     { name: "千葉県", file: "kanto-chiba.jpg" },
+            //     { name: "東京都", file: "kanto-tokyo.jpg" },
+            //     { name: "神奈川県", file: "kanto-kanagawa.jpg" },
           ],
         },
         {
           id: "chubu",
           name: "中部",
           prefs: [
-            // { name: "新潟県", file: "tyubu-nigata.jpg" },
+            //     { name: "新潟県", file: "tyubu-nigata.jpg" },
             { name: "富山県", file: "tyubu-toyama.jpg" },
-            // { name: "石川県", file: "tyubu-ishikawa.jpg" },
+            //     { name: "石川県", file: "tyubu-ishikawa.jpg" },
             { name: "福井県", file: "tyubu-fukui.jpg" },
             { name: "山梨県", file: "tyubu-yamanasi.jpg" },
             { name: "長野県", file: "tyubu-nagano.jpg" },
             { name: "岐阜県", file: "tyubu-gifu.jpg" },
-            // { name: "静岡県", file: "tyubu-shizuoka.jpg" },
-            // { name: "愛知県", file: "tyubu-aichi.jpg" },
+            //     { name: "静岡県", file: "tyubu-shizuoka.jpg" },
+            //     { name: "愛知県", file: "tyubu-aichi.jpg" },
           ],
         },
         {
@@ -481,7 +386,7 @@
           name: "四国",
           prefs: [
             { name: "徳島県", file: "shikoku-tokushima.jpg" },
-            // { name: "香川県", file: "shikoku-kagawa.jpg" },
+            //     { name: "香川県", file: "shikoku-kagawa.jpg" },
             { name: "愛媛県", file: "shikoku-ehime.jpg" },
             { name: "高知県", file: "shikoku-kochi.jpg" },
           ],
@@ -1485,6 +1390,7 @@
             labelDy: 0,
           },
         ],
+
         "kyusyu-fukuoka.jpg": [
           {
             name: "原鶴",
@@ -4274,25 +4180,6 @@
         ],
       };
 
-      /* ポップアップ関連の関数 */
-      function openModal(name, address, url) {
-        document.getElementById("modalTitle").innerText = "道の駅 " + name;
-        document.getElementById("modalAddress").innerText = address;
-        document.getElementById("modalYoutubeLink").href = url;
-        const modal = document.getElementById("stationModal");
-        modal.style.display = "flex";
-      }
-
-      function closeModal() {
-        document.getElementById("stationModal").style.display = "none";
-      }
-
-      // 背景クリックでポップアップを閉じる
-      window.onclick = function (event) {
-        const modal = document.getElementById("stationModal");
-        if (event.target == modal) closeModal();
-      };
-
       async function init() {
         generateRegionNav();
         setupScrollCancel();
@@ -4345,7 +4232,8 @@
               const target = document.getElementById(region.id);
               if (target) {
                 target.scrollIntoView({ behavior: "smooth" });
-                setTimeout(hideLoading, 800);
+                // スクロール完了頃を見計らって非表示にする
+                setTimeout(hideLoading, 800); // 1.0秒に設定
                 clearPendingState();
               }
             }, 100);
@@ -4398,7 +4286,7 @@
 
           link.onclick = (e) => {
             e.preventDefault();
-            showLoading();
+            showLoading(); // 読み込み中を表示
 
             if (pendingTargetId && pendingTargetId !== region.id)
               clearPendingState();
@@ -4410,6 +4298,7 @@
             const target = document.getElementById(region.id);
             if (target) {
               target.scrollIntoView({ behavior: "smooth" });
+              // 移動完了頃（約0.5秒後）に非表示
               setTimeout(() => {
                 hideLoading();
                 clearPendingState();
@@ -4456,13 +4345,11 @@
         label.style.transform = `translate(${dx}px, ${dy}px)`;
         label.innerHTML = st.name;
 
-        // ポップアップを表示するためのリンク要素
-        const link = document.createElement("div");
+        const link = document.createElement("a");
+        link.href = st.url;
+        link.target = "_blank";
         link.className = "pin-link";
         link.innerHTML = `<i class="fas fa-map-marker-alt pin-icon"></i>`;
-
-        // ピンクリックイベント（ポップアップ表示）
-        link.onclick = () => openModal(st.name, st.address, st.url);
 
         wrapper.appendChild(label);
         wrapper.appendChild(link);
